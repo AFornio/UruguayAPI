@@ -79,6 +79,9 @@ GEM
     erubi (1.12.0)
     globalid (1.0.1)
       activesupport (>= 5.0)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     io-console (0.6.0)
@@ -97,6 +100,7 @@ GEM
     mini_mime (1.1.2)
     minitest (5.17.0)
     msgpack (1.6.0)
+    multi_xml (0.6.0)
     net-imap (0.3.4)
       date
       net-protocol
@@ -161,6 +165,8 @@ DEPENDENCIES
   bootsnap
   ci_uy
   debug
+  httparty
+  nokogiri
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.1)

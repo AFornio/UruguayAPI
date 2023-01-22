@@ -13,6 +13,8 @@ gem "pg", "~> 1.1"
 gem "puma", "~> 5.0"
 
 gem 'ci_uy'
+gem 'httparty'
+gem 'nokogiri'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
