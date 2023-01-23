@@ -81,6 +81,4 @@ test:
 #
 production:
   <<: *default
-  database: UruguayAPI_production
-  username: UruguayAPI
-  password: <%= ENV["URUGUAYAPI_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
