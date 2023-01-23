@@ -7,6 +7,10 @@ Rails.application.routes.draw do
         get 'validate_digit'
         get 'random'
       end
+
+      scope 'rates', controller: 'rates', as: 'rates' do
+        get 'index'
+      end
     end
   end
   # Defines the root path route ("/")
