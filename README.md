@@ -53,13 +53,72 @@ Devuelve un número de CI válido aleatorio.
 
 Devuelve las tasas de cambio actuales para varias monedas en el Banco de la República Oriental del Uruguay (BROU).
 
+## BUSES - TRES CRUCES
+
+### GET /api/v1/buses/options
+
+Devuelve opciones de búsqueda para las rutas de autobuses.
+
 **Respuesta**
 
-- 200 OK: Devuelve un objeto JSON con las tasas de cambio actuales para las siguientes monedas: dólar, dólar ebrou, euro, peso argentino, real, libra esterlina, franco suizo, guaraní, unidad indexada, onza troy de oro.
-- bid: precio de compra
-- ask: precio de venta
-- spread_bid: spread de compra
-- spread_ask: spread de venta
+- 200 OK: Devuelve un objeto JSON que contiene las opciones de búsqueda. Las opciones son:
+  - origins_and_destinations: un array que contiene todos los orígenes y destinos disponibles.
+  - companies: un array que contiene todas las empresas de autobuses disponibles.
+  - days: un array que contiene todos los días disponibles.
+  - shifts: un array que contiene todos los turnos disponibles.
+
+### GET /api/v1/buses/schedules?origin=&destination=
+
+Devuelve los horarios de autobuses para una ruta específica.
+
+**Parámetros**
+
+- origin (requerido): el origen de la ruta. Debe ser una cadena que representa la ubicación.
+- destination (requerido): el destino de la ruta. Debe ser una cadena que representa la ubicación.
+- company_id (opcional): el ID de la empresa de autobuses. Debe ser un entero.
+- day (opcional): el día de la semana. Debe ser una cadena que representa el día de la semana.
+- shift (opcional): el turno de los horarios. Debe ser una cadena que representa el turno.
+- pag (opcional): el número de página para los resultados de búsqueda. Debe ser un entero.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene los horarios de autobuses para la ruta especificada. Los horarios son un array de objetos, cada uno de los cuales representa un horario de autobús.
+  Los objetos tienen las siguientes claves:
+
+  - departure_time: la hora de salida del autobús.
+  - frequency: la frecuencia de los autobuses en minutos.
+  - route: la ruta del autobús.
+  - time: el tiempo de viaje en horas y minutos.
+  - distance: la distancia del viaje en kilómetros.
+  - company: la empresa de autobuses.
+
+  También incluye un objeto JSON de paginación que contiene las siguientes claves:
+
+  - max: el número máximo de páginas para los resultados de búsqueda.
+  - current: el número de página actual para los resultados de búsqueda.
+  - query_param: el parámetro de consulta utilizado para la paginación.
+  - showing_all: un indicador booleano que indica si se han mostrado todos los resultados de búsqueda.
+
+- 422 Unprocessable Entity: Si no se proporcionan los parámetros origin y destination.
+
+### GET /api/v1/buses/all_schedules
+
+Obtiene una lista de todos los horarios de autobuses disponibles entre dos ubicaciones.
+
+**Parámetros**
+
+- origin: Ubicación de origen del viaje (requerido).
+- destination: Ubicación de destino del viaje (requerido).
+- company_id: ID de la compañía de autobuses (opcional).
+- day: Día de la semana del viaje (opcional).
+- shift: Turno del viaje (opcional).
+- pag: Número de página de los resultados (opcional).
+
+**Respuesta**
+
+- 200 OK: Devuelve una lista de objetos de horarios de autobuses que coinciden con los parámetros proporcionados. Cada objeto contiene la hora de salida, frecuencia, ruta, duración, distancia y compañía de autobuses.
+- 400 Bad Request: Si no se proporciona una ubicación de origen o de destino.
+- 422 Unprocessable Entity: Si el número de página de resultados es inválido.
 
 ---
 
