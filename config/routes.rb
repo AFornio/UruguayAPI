@@ -11,6 +11,12 @@ Rails.application.routes.draw do
       scope 'rates', controller: 'rates', as: 'rates' do
         get 'index'
       end
+
+      scope 'buses', controller: 'buses', as: 'buses' do
+        get 'options'
+        get 'schedules'
+        get 'all_schedules'
+      end
     end
   end
   # Defines the root path route ("/")
