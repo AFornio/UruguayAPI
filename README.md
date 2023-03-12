@@ -2,6 +2,10 @@
 
 UruguayAPI es un proyecto de código abierto que tiene como objetivo hacer que los datos sobre Uruguay sean fácilmente accesibles a través de una API simple. La API espera (en un futuro) brindar acceso a información sobre la geografía, la demografía, la economía y más de Uruguay. Los datos provienen de fuentes confiables, como sitios web gubernamentales y agencias estadísticas.
 
+Es importante aclarar que UruguayAPI es una "PROXY API", lo que significa que es una API intermedia que redirige las solicitudes a otras fuentes de datos confiables, como sitios web gubernamentales y agencias estadísticas. Como resultado, puede haber una ligera disminución en la velocidad de respuesta en comparación con una API que proporciona datos directamente.
+
+Nuestro objetivo principal es lanzar un MVP. A medida que el proyecto evoluciona, podremos trabajar en mejorar la velocidad de respuesta y añadir más características y mejoras para hacer que la experiencia del usuario sea aún mejor.
+
 # Demo
 
 Por el momento, la API esta alojada en [render](https://render.com/). La URL base:
