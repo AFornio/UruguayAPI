@@ -17,6 +17,11 @@ Rails.application.routes.draw do
         get 'schedules'
         get 'all_schedules'
       end
+
+      scope 'gasoline', controller: 'gasoline', as: 'gasoline' do
+        get 'index'
+        get ':name', to: 'gasoline#show'
+      end
     end
   end
   # Defines the root path route ("/")
