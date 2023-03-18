@@ -124,6 +124,47 @@ Obtiene una lista de todos los horarios de autobuses disponibles entre dos ubica
 - 400 Bad Request: Si no se proporciona una ubicación de origen o de destino.
 - 422 Unprocessable Entity: Si el número de página de resultados es inválido.
 
+## Gasolina - Ancap
+
+### GET /api/v1/gasoline
+
+Obtiene una lista de precios de combustibles de Uruguay (Ancap)
+
+**Parámetros**
+
+Este endpoint no requiere parámetros.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene los precios de los siguientes combustibles de Ancap: Super 95 Premium 97 Gasoil 10-S Gasoil 50-S.
+  Cada combustible se presenta como una clave en el objeto JSON y tiene los siguientes valores:
+
+  - max_price: El precio máximo del combustible.
+  - ancap_price: El precio del combustible en las estaciones de servicio de Ancap.
+  - currency: La moneda en la que se expresan los precios (en este caso, siempre será "UYU").
+
+- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener los precios de combustibles.
+
+### GET /api/v1/gasoline/:name
+
+Obtiene los precios de un combustible específico de Uruguay (Ancap).
+
+**Parámetros**
+
+- name: El nombre del combustible que se desea obtener. Debe ser una de las siguientes opciones: "Super 95", "Premium 97", "Gasoil 10-S" o "Gasoil 50-S".
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene los precios del combustible solicitado. El objeto JSON tiene los siguientes valores:
+
+  - max_price: El precio máximo del combustible.
+  - ancap_price: El precio del combustible en las estaciones de servicio de Ancap.
+  - currency: La moneda en la que se expresan los precios (en este caso, siempre será "UYU").
+
+- 404 Not Found: Si el combustible solicitado no existe en la lista de combustibles de Ancap.
+
+- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener los precios de combustibles.
+
 ---
 
 ### Inspirado por 💡:
