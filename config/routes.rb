@@ -30,6 +30,11 @@ Rails.application.routes.draw do
         get 'holidays_and_observances/:year', to: 'holidays#holidays_and_observances'
         get 'holidays_and_observances_including_locals/:year', to: 'holidays#holidays_and_observances_including_locals'
       end
+      
+      scope 'billboard', controller: 'billboard', as: 'billboard' do
+        get 'index'
+        get ':event_type', to: 'billboard#show'
+      end
     end
   end
   # Defines the root path route ("/")

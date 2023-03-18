@@ -235,6 +235,34 @@ Obtiene una lista de todas las festividades, observancias y festivales locales e
 
 - 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad, observancia y festival local, incl
 
+## CARTELERA
+
+## GET /api/v1/billboard/index
+
+Obtiene una lista de eventos en diferentes categorías de "Cartelera".
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene una lista de items para cada una de las siguientes categorías: "arte," "cable," "cine," "musica," "teatro," y "videos." Cada categoría contiene un array de objetos JSON, donde cada objeto representa un evento.
+
+- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.
+
+## GET /api/v1/billboard/:event_type
+
+Obtiene una lista de items para una categoría específica.
+
+**Parámetros**
+
+- event_type: El tipo de evento que se desea obtener. Debe ser una de las siguientes opciones: "art," "cable," "movies," "music," "theater," o "videos".
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene una lista de items para la categoría especificada. Cada item es un objeto JSON que representa a un evento.
+
+- 404 Not Found: Si el tipo de evento solicitado no existe en la lista de categorías.
+
+- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.
+
 ---
 
 ### Inspirado por 💡:
