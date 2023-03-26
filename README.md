@@ -165,6 +165,76 @@ Obtiene los precios de un combustible específico de Uruguay (Ancap).
 
 - 500 Internal Server Error: Si ocurre algún error en el servidor al obtener los precios de combustibles.
 
+## Holidays
+
+### GET /api/v1/holidays
+
+Obtiene una lista de todas las festividades y días feriados en Uruguay para un año determinado.
+
+**Parámetros**
+
+- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro dígitos.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad, incluyendo el mes y día en que se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial o no oficial).
+
+- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
+
+### GET /api/v1/holidays/official
+
+Obtiene una lista de todas las festividades y días feriados oficiales en Uruguay para un año determinado.
+
+**Parámetros**
+
+- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro dígitos.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad oficial, incluyendo el mes y día en que se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial).
+
+- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
+
+### GET /api/v1/holidays/official_and_non_working
+
+Obtiene una lista de todas las festividades y días feriados oficiales y no laborables en Uruguay para un año determinado.
+
+**Parámetros**
+
+- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro dígitos.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad oficial y no laborable, incluyendo el mes y día en que se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial o no oficial).
+
+- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
+
+### GET /api/v1/holidays/holidays_and_observances
+
+Obtiene una lista de todas las festividades y observancias en Uruguay para un año determinado.
+
+**Parámetros**
+
+- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro dígitos.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad y observancia, incluyendo el mes y día en que se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial o no oficial).
+
+- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
+
+### GET /api/v1/holidays/holidays_and_observances_including_locals
+
+Obtiene una lista de todas las festividades, observancias y festivales locales en Uruguay para un año determinado.
+
+**Parámetros**
+
+- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro dígitos.
+
+**Respuesta**
+
+- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad, observancia y festival local, incl
+
 ---
 
 ### Inspirado por 💡:
