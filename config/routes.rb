@@ -40,6 +40,12 @@ Rails.application.routes.draw do
         get 'antel_arena'
         get 'meetups'
       end
+      
+      scope 'banks', controller: 'banks', as: 'banks' do
+        get 'santander_benefits'
+        get 'brou_benefits'
+        get 'scotiabank_benefits'
+      end
     end
   end
   # Defines the root path route ("/")
