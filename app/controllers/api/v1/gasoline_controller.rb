@@ -7,7 +7,7 @@ class Api::V1::GasolineController < ApplicationController
     {name: 'Gasoil 50-S', url: "https://www.ancap.com.uy/1642/1/gasoil--50-s.html"},
   ].freeze
 
-  def index
+  def ancap_rates
     gasoline = {}
     threads = []
   

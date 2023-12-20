@@ -22,62 +22,249 @@ class Api::V1::EventsController < ApplicationController
     render json: events_data
   end
 
-  def meetups
-    return render json: {error: 'Page param must be a positive number'} if !params[:page].present?
-    return render json: {error: 'Page param must be a number greater than 0'} if params[:page].to_i <= 0
+  BASE_URL = 'https://www.cartelera.com.uy'
 
-    page = params[:page].present? ? params[:page].to_i : 1
+  def index
+    render json: billboard_data
+  end
 
-    url = URI("https://www.meetup.com/gql")
-    https = Net::HTTP.new(url.host, url.port)
-    https.use_ssl = true
+  def show
+    event_type = params[:event_type]
 
-    request = Net::HTTP::Post.new(url)
-    request["authority"] = "www.meetup.com"
-    request["accept"] = "*/*"
-    request["accept-language"] = "es"
+    return render json: { error: 'Invalid event type' }, status: :not_found unless valid_event_types.include?(event_type)
+    return render json: scrape_data(event_type)
+  end
 
-    after = "recSource:ml-popular-events-nearby,index:#{(page - 1) * 20}"
-    after = Base64.encode64(after).chomp
+  def scrape_data(type)
+    url = build_url(type)
+    response = HTTParty.get(url)
+    doc = Nokogiri::HTML(response.body)
+    articles = doc.css('ul.listado-eventos li article')
+    data = []
 
-    request.body = JSON.dump({
-      "operationName": "categorySearch",
-      "variables": {
-        "first": 20,
-        "lat": -32.914704,
-        "lon": -55.918101,
-        "topicCategoryId": nil,
-        "radius": 200,
-        "startDateRange": "2023-10-03T13:09:00-04:00[US/Eastern]",
-        "sortField": "RELEVANCE",
-        "after": after
-      },
-      "extensions": {
-        "persistedQuery": {
-          "version": 1,
-          "sha256Hash": "0aceed81313ebba814c0feadeda32f404147996091b6b77209353e2183b2dabb"
-        }
-      }
-    })
-
-    response = https.request(request)
-    body = JSON.parse(response.read_body)
-    events_data = []
-
-    body["data"]["rankedEvents"]["edges"].each do |event_item|
-      events_data << {
-        title:  event_item["node"]["title"],
-        thumbnail: event_item["node"]["images"][0] ? event_item["node"]["images"][0]["source"] : nil,
-        date_time: event_item["node"]["dateTime"],
-        end_time: event_item["node"]["endTime"],
-        description: event_item["node"]["description"],
-        duration: event_item["node"]["duration"],
-        timezone: event_item["node"]["timezone"],
-        event_type: event_item["node"]["eventType"],
-        event_url: event_item["node"]["eventUrl"]
-      }
+    articles.each do |article|
+      data << extract_data(article, type)
     end
 
-    render json: events_data
+    data
+  end
+
+  private
+
+  def extract_data(article, type)
+    img = article.css('.poster-container > a > img').first&.[]('src')
+    name = article.css('.info-holder .name').text.strip
+    event_data = article.css('.info-holder .event-data li')
+
+    case type
+      when 'art'
+        return {
+          "#{name}": {
+            genre: event_data.css('strong')[0]&.text&.strip,
+            show: event_data.css('strong')[1]&.text&.strip,
+            room: event_data.css('strong')[2]&.text&.strip,
+            img: img,
+          }
+        }
+
+      when 'cable'
+        return {
+          "#{name}": {
+            channel: event_data.css('strong')[0]&.text&.strip,
+            shcedule: event_data.css('strong')[1]&.text&.strip,
+            genre: event_data.css('strong')[2]&.text&.strip,
+            director: event_data.css('strong')[3]&.text&.strip,
+            protagonists: event_data.css('strong')[4]&.text&.strip,
+            img: img,
+          }
+        }
+
+      when 'theater'
+      theater_data = {
+        "#{name}": {
+          genre: event_data.css('strong')[0]&.text&.strip,
+          director: event_data.css('strong')[1]&.text&.strip,
+          room: event_data.css('strong')[2]&.text&.strip,
+          img: img,
+          today_schedules: extract_schedules(article)
+        }
+      }
+      return theater_data
+
+    when 'videos'
+      director = event_data.css('strong')[1]&.text&.strip
+      protagonists = event_data.css('strong')[2]&.text&.strip
+      available_on = event_data.css('a').first&.[]('href')
+
+      return {
+        "#{name}": {
+          genre: event_data.css('strong')[0]&.text&.strip,
+          director: event_data.css('strong')[1]&.text&.strip,
+          protagonists: event_data.css('strong')[2]&.text&.strip,
+          available_on: event_data.css('a').first&.[]('href'),
+          img: data[:img]
+        }
+      }
+
+    when 'music'
+      return {
+        "#{name}": {
+          cast: event_data.css('strong')[0]&.text&.strip,
+          room: data[:event_data][1]&.text&.strip,
+          locations: data[:event_data][2]&.text&.strip,
+          img: img,
+        }
+      }
+
+    when 'movies'
+      return {
+        "#{name}": {
+          genre: event_data.css('strong')[0]&.text&.strip,
+          director: event_data.css('strong')[1]&.text&.strip,
+          protagonists: event_data.css('strong')[2]&.text&.strip,
+          img: img,
+          today_schedules: extract_schedules(article)
+        }
+      }
+      end
+  end
+
+  def extract_schedules(article)
+    schedules_list = article.css('.horarios-container .salas > li')
+    return [] if schedules_list.empty?
+
+    schedules = []
+    schedules_list.each do |schedule_item|
+      place = schedule_item.css('.heading.small').text.strip
+      shcedule_data = {
+        "#{place}": {
+          hours: [],
+          language: [],
+        }
+      }
+
+      schedule_item.css('ul.lista-horarios > li').each do |schedule|
+        shcedule_data[:"#{place}"][:language] << schedule.css('.subheading').text.strip
+        shcedule_data[:"#{place}"][:hours] << schedule.css('ul > li.hour').text.strip
+      end
+
+      schedules << shcedule_data
+    end
+
+    return schedules
+  end
+
+
+  def valid_event_types
+    %w[movies music videos theater cable art]
+  end
+
+  def build_url(type)
+    case type
+      when 'art'
+        "#{BASE_URL}/avercarteleraarte.aspx?123"
+      when 'cable'
+        "#{BASE_URL}/apeliculafuncionescable.aspx?,FILM,0,0,109"
+      when 'theater'
+        "#{BASE_URL}/apeliculafunciones.aspx?,,PELICULAS,OBRA,0,111"
+      when 'videos'
+        "#{BASE_URL}/avercarteleraondemand.aspx?121"
+      when 'music'
+        "#{BASE_URL}/aporfechas.aspx?6,112,0,2"
+      when 'movies'
+        "#{BASE_URL}/apeliculafunciones.aspx?,,PELICULAS,FILM,0,108"
+      end
+  end
+
+  def billboard_data
+    sections_data = sections.map do |section|
+      { "#{section['id']}": events_data(section) }
+    end
+
+    sections_data.inject(&:merge)
+  end
+
+  def sections
+    doc = Nokogiri::HTML(cartelera_response.body)
+    doc.css('section')
+  end
+
+  def cartelera_response
+    HTTParty.get("https://www.cartelera.com.uy/")
+  end
+
+  def events_data(section)
+    section.css('.slider-holder .listado-eventos li article').map do |event|
+      send("#{section['id']}_event_data", event)
+    end
+  end
+
+  def cine_event_data(event)
+    {
+      "#{event.css('.container .name').text.strip}": {
+        type: event.css('.container .type').text.strip,
+        trailer: event.css('.container a.trailer').first&.[]('href'),
+        info: event.css('a').first&.[]('href'),
+        img: event.css('a img').first&.[]('src')
+      }
+    }
+  end
+
+  def musica_event_data(event)
+    {
+      "#{event.css('.container .name').text.strip}": {
+        featured: event.css('.container .destacado').text.strip,
+        venue: event.css('.container .venue').text.strip,
+        info: event.css('a').first&.[]('href'),
+        img: event.css('a img').first&.[]('src')
+      }
+    }
+  end
+
+  def videos_event_data(event)
+    {
+      "#{event.css('.container .name').text.strip}": {
+        featured: event.css('.container .destacado').text.strip,
+        genre: event.css('.container p').last.text.strip,
+        info: event.css('a').first&.[]('href'),
+        img: event.css('a img').first&.[]('src')
+      }
+    }
+  end
+
+  def teatro_event_data(event)
+    {
+      "#{event.css('.container .name').text.strip}": {
+        featured: event.css('.container .destacado').text.strip,
+        venue: event.css('.container .venue').text.strip,
+        info: event.css('a').first&.[]('href'),
+        img: event.css('a img').first&.[]('src')
+      }
+    }
+  end
+
+  def cable_event_data(event)
+    {
+      "#{event.css('.container .name').text.strip}": {
+        featured: event.css('.container .destacado').text.strip,
+        channel: event.css('.container .highlight').last.text.strip,
+        genre: event.css('.container p').first.text.strip,
+        info: event.css('a').first&.[]('href'),
+        img: event.css('a img').first&.[]('src')
+      }
+    }
+  end
+
+  def arte_event_data(event)
+    {
+      "#{event.css('.container .name').text.strip}": {
+        featured: event.css('.container .destacado').text.strip,
+        genre: event.css('.container p').first.text.strip,
+        artist: event.css('.container p')[1]&.text&.strip,
+        venue: event.css('.container p').last.text.strip,
+        info: event.css('a').first&.[]('href'),
+        img: event.css('a img').first&.[]('src')
+      }
+    }
   end
 end

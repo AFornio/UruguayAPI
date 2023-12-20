@@ -8,8 +8,9 @@ Rails.application.routes.draw do
         get 'random'
       end
 
-      scope 'rates', controller: 'rates', as: 'rates' do
-        get 'index'
+      scope 'banks', controller: 'banks', as: 'banks' do
+        get 'brou_rates'
+        get 'brou_benefits'
       end
 
       scope 'buses', controller: 'buses', as: 'buses' do
@@ -19,36 +20,20 @@ Rails.application.routes.draw do
       end
 
       scope 'gasoline', controller: 'gasoline', as: 'gasoline' do
-        get 'index'
+        get 'ancap_rates'
         get ':name', to: 'gasoline#show'
       end
 
       scope 'holidays', controller: 'holidays', as: 'holidays' do
-        get ':year', to: 'holidays#show'
-        get 'official/:year', to: 'holidays#official'
-        get 'official_and_non_working/:year', to: 'holidays#official_and_non_working'
-        get 'holidays_and_observances/:year', to: 'holidays#holidays_and_observances'
-        get 'holidays_and_observances_including_locals/:year', to: 'holidays#holidays_and_observances_including_locals'
-      end
-
-      scope 'billboard', controller: 'billboard', as: 'billboard' do
-        get 'index'
-        get ':event_type', to: 'billboard#show'
+        root 'holidays#index'
       end
 
       scope 'events', controller: 'events', as: 'events' do
+        get 'billboard/:event_type', to: 'events#show'
         get 'antel_arena'
-        get 'meetups'
       end
-      
-      scope 'banks', controller: 'banks', as: 'banks' do
-        get 'santander_benefits'
-        get 'brou_benefits'
-        get 'scotiabank_benefits'
-      end
+
     end
   end
-  # Defines the root path route ("/")
-  # root "articles#index"
 end
 

@@ -1,27 +1,30 @@
 class Api::V1::BanksController < ApplicationController
 
-  def santander_benefits
-    url = 'https://www.santander.com.uy/resultsTodos.json'
-    response = HTTParty.get(url)
-    json = JSON.parse(response.body)
+  def brou_rates
+    brou_url = "https://www.brou.com.uy/c/portal/render_portlet?p_l_id=20593&p_p_id=cotizacionfull_WAR_broutmfportlet_INSTANCE_otHfewh1klyS"
+    response = HTTParty.get(brou_url)
+    
+    doc = Nokogiri::HTML(response.body)
+    table = doc.css('table')
+    rates = {}
 
-    discounts_by_category = {}
+    table.css('tr')[1..-1].each do |row|
+      columns = row.css('td')
+      currency = columns[0].css('p.moneda').text
+      bid = columns[2].css('p.valor').text.gsub(/\s+/, "")
+      ask = columns[4].css('p.valor').text.gsub(/\s+/, "")
+      spread_bid = columns[6].css('p.valor').text.gsub(/\s+/, "")
+      spread_ask = columns[8].css('p.valor').text.gsub(/\s+/, "")
 
-    json.each do |discount|
-      category = discount['categoriaNom']
-      discounts_by_category[category] = [] unless discounts_by_category[category]
-
-      discounts_by_category[category] << {
-        name: discount['nombre'],
-        bodyExtract: discount['bodyExtract'],
-        description: discount['body'],
-        category: category,
-        logo: "https://www.santander.com.uy/beneficios/#{discount['listImageId']}.jpg",
-        departments: discount['departamentos']
+      currency = I18n.transliterate(currency.gsub(' ', '_').downcase)
+      rates[currency] = {
+        bid: bid,
+        ask: ask,
+        spread_bid: spread_bid,
+        spread_ask: spread_ask
       }
     end
-
-    render json: discounts_by_category
+    render json: rates
   end
   
   def brou_benefits
@@ -50,7 +53,7 @@ class Api::V1::BanksController < ApplicationController
       discounts_by_category[category] = [] unless discounts_by_category[category]
       json.each do |discount|
         discounts_by_category[category] << {
-          name: discount['slug'],
+          name: discount['slug'].gsub(/-|_/, ' ').capitalize.strip,
           bodyExtract: discount['full_texto'],
           description: discount['descripcion'],
           category: category,
@@ -62,50 +65,4 @@ class Api::V1::BanksController < ApplicationController
 
     render json: discounts_by_category
   end
-  
-  def scotiabank_benefits
-    url = 'https://www.scotiabank.com.uy/Personas/Tarjetas/Beneficios/default'
-    response = HTTParty.get(url)
-    
-    doc = Nokogiri::HTML(response.body)
-
-    discounts_by_category = {}
-
-    script_tags = doc.css('script')
-    script_tags.each do |script_tag|
-      script_content = script_tag.text
-      if script_content.include? 'pushBenefit({'
-        json = script_content.split('pushBenefit(')[1].split(');')[0] 
-        json = json.gsub('"', '')
-        json = json.gsub("'", '')  
-
-        json = json.split("\n")
-        benefit = {}
-        json.each do |line|
-          if line.include? '{' or line.include? '}'
-          else
-            line = line.gsub("\t", '')
-            line = line[0..-2] if line[-1] == ','
-            key = line.split(':')[0]
-            value = line.split(':')[1..]&.join(':')
-            benefit[key] = value&.strip
-          end
-        end
-
-        category = benefit['categoria']
-
-        discounts_by_category[category] = [] unless discounts_by_category[category]
-        discounts_by_category[category] << {
-          name: benefit['titulo'],
-          bodyExtract: benefit['descripcion'],
-          description: benefit['descripcion'],
-          category: category,
-          departments: benefit['departamentos'],
-          logo: benefit['logo'],
-        }
-      end
-    end
-
-    render json: discounts_by_category
   end
-end

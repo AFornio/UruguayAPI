@@ -62,14 +62,6 @@ Devuelve un número de CI válido aleatorio.
 - 200 OK: Devuelve un número de CI válido aleatorio.
 </details>
 <details>
-  <summary>Cotizaciones - BROU</summary>
-
-### GET /api/v1/rates/index
-
-Devuelve las tasas de cambio actuales para varias monedas en el Banco de la República Oriental del Uruguay (BROU).
-
-</details>
-<details>
   <summary>Buses - Tres Cruces</summary>
 
 ### GET /api/v1/buses/options
@@ -193,102 +185,31 @@ Obtiene los precios de un combustible específico de Uruguay (Ancap).
 
 ### GET /api/v1/holidays
 
-Obtiene una lista de todas las festividades y días feriados en Uruguay para un año determinado.
+Obtiene una lista de todas las festividades y días feriados en Uruguay para el año
 
-**Parámetros**
-
-- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro
-  dígitos.
-
-**Respuesta**
-
-- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad, incluyendo el mes y día en que se
-  celebra, el día de la semana, el nombre de la festividad y el tipo (oficial o no oficial).
-
-- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
-
-### GET /api/v1/holidays/official
-
-Obtiene una lista de todas las festividades y días feriados oficiales en Uruguay para un año determinado.
-
-**Parámetros**
-
-- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro
-  dígitos.
-
-**Respuesta**
-
-- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad oficial, incluyendo el mes y día en
-  que
-  se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial).
-
-- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
-
-### GET /api/v1/holidays/official_and_non_working
-
-Obtiene una lista de todas las festividades y días feriados oficiales y no laborables en Uruguay para un año
-determinado.
-
-**Parámetros**
-
-- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro
-  dígitos.
-
-**Respuesta**
-
-- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad oficial y no laborable, incluyendo
-  el
-  mes y día en que se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial o no oficial).
-
-- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
-
-### GET /api/v1/holidays/holidays_and_observances
-
-Obtiene una lista de todas las festividades y observancias en Uruguay para un año determinado.
-
-**Parámetros**
-
-- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro
-  dígitos.
-
-**Respuesta**
-
-- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad y observancia, incluyendo el mes y
-  día
-  en que se celebra, el día de la semana, el nombre de la festividad y el tipo (oficial o no oficial).
-
-- 400 Bad Request: Si se proporciona un año inválido o no se proporciona ningún año.
-
-### GET /api/v1/holidays/holidays_and_observances_including_locals
-
-Obtiene una lista de todas las festividades, observancias y festivales locales en Uruguay para un año determinado.
-
-**Parámetros**
-
-- year (obligatorio): El año para el cual se desean obtener las festividades. Debe ser un número entero de cuatro
-  dígitos.
-
-**Respuesta**
-
-- 200 OK: Devuelve un objeto JSON que contiene información sobre cada festividad, observancia y festival local, incl
 </details>
+
 <details>
-  <summary>CARTELERA</summary>
+  <summary>EVENTOS - QUE HACER?</summary>
 
-### GET /api/v1/billboard/index
+### GET /api/v1/events/:event
 
-Obtiene una lista de eventos en diferentes categorías de "Cartelera".
+Obtiene información sobre los eventos disponibles para la organización enviada
+
+**Parámetros**
+
+- event: De momento, puede ser "antel_arena"
 
 **Respuesta**
 
-- 200 OK: Devuelve un objeto JSON que contiene una lista de items para cada una de las siguientes categorías:
-  "arte,"
-  "cable," "cine," "musica," "teatro," y "videos." Cada categoría contiene un array de objetos JSON, donde cada objeto
-  representa un evento.
+- 200 OK: Devuelve un objeto JSON que contiene una lista de items. Cada item es un objeto JSON que representa a un
+  evento.
+
+- 404 Not Found: Si el tipo de evento solicitado no existe.
 
 - 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.
 
-### GET /api/v1/billboard/:event_type
+### GET /api/v1/events/billboard/:event_type
 
 Obtiene una lista de items para una categoría específica.
 
@@ -304,31 +225,13 @@ Obtiene una lista de items para una categoría específica.
 
 - 404 Not Found: Si el tipo de evento solicitado no existe en la lista de categorías.
 
-- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.
-</details>
-
-<details>
-  <summary>EVENTOS - QUE HACER?</summary>
-
-### GET /api/v1/events/:event
-
-Obtiene información sobre los eventos disponibles para la organización enviada
-
-**Parámetros**
-
-- event: De momento, puede ser "antel_arena" o "meetups"
-
-**Respuesta**
-
-- 200 OK: Devuelve un objeto JSON que contiene una lista de items. Cada item es un objeto JSON que representa a un
-  evento.
-
-- 404 Not Found: Si el tipo de evento solicitado no existe.
-
-- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.
-</details>
+- 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.</details>
 <details>
   <summary>BANCOS</summary>
+
+### GET /api/v1/banks/brou_rates
+
+Devuelve las tasas de cambio actuales para varias monedas en el Banco de la República Oriental del Uruguay (BROU).
 
 ### GET /api/v1/banks/:bank_benefits
 
