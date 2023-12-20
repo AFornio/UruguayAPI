@@ -62,14 +62,6 @@ Devuelve un número de CI válido aleatorio.
 - 200 OK: Devuelve un número de CI válido aleatorio.
 </details>
 <details>
-  <summary>Cotizaciones - BROU</summary>
-
-### GET /api/v1/rates/index
-
-Devuelve las tasas de cambio actuales para varias monedas en el Banco de la República Oriental del Uruguay (BROU).
-
-</details>
-<details>
   <summary>Buses - Tres Cruces</summary>
 
 ### GET /api/v1/buses/options
@@ -329,6 +321,10 @@ Obtiene información sobre los eventos disponibles para la organización enviada
 </details>
 <details>
   <summary>BANCOS</summary>
+
+### GET /api/v1/banks/brou_rates
+
+Devuelve las tasas de cambio actuales para varias monedas en el Banco de la República Oriental del Uruguay (BROU).
 
 ### GET /api/v1/banks/:bank_benefits
 

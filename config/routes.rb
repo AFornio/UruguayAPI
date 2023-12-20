@@ -8,8 +8,11 @@ Rails.application.routes.draw do
         get 'random'
       end
 
-      scope 'rates', controller: 'rates', as: 'rates' do
-        get 'index'
+      scope 'banks', controller: 'banks', as: 'banks' do
+        get 'brou_rates'
+        get 'santander_benefits'
+        get 'brou_benefits'
+        get 'scotiabank_benefits'
       end
 
       scope 'buses', controller: 'buses', as: 'buses' do
@@ -19,7 +22,7 @@ Rails.application.routes.draw do
       end
 
       scope 'gasoline', controller: 'gasoline', as: 'gasoline' do
-        get 'index'
+        get 'ancap_rates'
         get ':name', to: 'gasoline#show'
       end
 
@@ -32,19 +35,13 @@ Rails.application.routes.draw do
       end
 
       scope 'billboard', controller: 'billboard', as: 'billboard' do
-        get 'index'
+        root 'billboard#index'
         get ':event_type', to: 'billboard#show'
       end
 
       scope 'events', controller: 'events', as: 'events' do
         get 'antel_arena'
         get 'meetups'
-      end
-      
-      scope 'banks', controller: 'banks', as: 'banks' do
-        get 'santander_benefits'
-        get 'brou_benefits'
-        get 'scotiabank_benefits'
       end
     end
   end
