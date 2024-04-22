@@ -24,11 +24,11 @@ class Api::V1::EventsController < ApplicationController
 
   BASE_URL = 'https://www.cartelera.com.uy'
 
-  def index
+  def billboard
     render json: billboard_data
   end
 
-  def show
+  def billboard_event
     event_type = params[:event_type]
 
     return render json: { error: 'Invalid event type' }, status: :not_found unless valid_event_types.include?(event_type)
