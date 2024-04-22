@@ -29,10 +29,14 @@ Rails.application.routes.draw do
       end
 
       scope 'events', controller: 'events', as: 'events' do
-        get 'billboard/:event_type', to: 'events#show'
+        get 'billboard', to: 'events#billboard'
+        get 'billboard/:event_type', to: 'events#billboard_event'
         get 'antel_arena'
       end
 
+      scope 'horoscope', controller: 'horoscope', as: 'horoscope' do
+        get 'today'
+      end
     end
   end
 end

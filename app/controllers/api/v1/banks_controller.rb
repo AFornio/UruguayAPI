@@ -55,7 +55,7 @@ class Api::V1::BanksController < ApplicationController
         discounts_by_category[category] << {
           name: discount['slug'].gsub(/-|_/, ' ').capitalize.strip,
           bodyExtract: discount['full_texto'],
-          description: discount['descripcion'],
+          description:  ActionView::Base.full_sanitizer.sanitize(discount['descripcion']),
           category: category,
           departments: '',
           logo: "https://beneficios.brou.com.uy/upload/beneficios/logos/#{discount['logo']}"
