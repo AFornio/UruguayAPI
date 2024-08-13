@@ -35,6 +35,10 @@ Rails.application.routes.draw do
       scope 'horoscope', controller: 'horoscope', as: 'horoscope' do
         get 'today'
       end
+
+      scope 'news', controller: 'news', as: 'news' do
+        get 'headlines'
+      end
     end
   end
 end

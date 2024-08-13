@@ -131,6 +131,17 @@ Obtiene una lista de todas las festividades y días feriados en Uruguay para el 
 </details>
 
 <details>
+<details>
+  <summary>Notiicas</summary>
+
+### GET /api/v1/news/headlines
+
+Obtiene una lista de los titulares de noticias más recientes en Uruguay.
+
+</details>
+
+<details>
+
   <summary>EVENTOS - QUE HACER?</summary>
 
 ### GET /api/v1/events/:event
