@@ -1,90 +1,34 @@
 class Api::V1::BusesController < ApplicationController
-
-  def options
-    render json: { origins_and_destinations: BusesService.locations, companies: BusesService.companies, days: BusesService.days, shifts: BusesService.shifts }
-  end
-
   def schedules
-    unless params[:origin].present? && params[:destination].present?
-      return render json: { error: 'Origin and destination are required' }
-    end
+    # Empresa;Origen;Depto.Origen;Destino;Depto.Destino;H.Salida;H.Llegada;Recorrido;Dias;Lugar;Depto.Lugar;Hora;F.Inicio;F.Fin;Id.Turno
+    url = "https://catalogodatos.gub.uy/dataset/1d50ccf7-121d-48a7-951e-28a02858d24e/resource/88839e85-a573-40e1-9bc2-72cd0fb4d8be/download/horarios_largadistancia_dnt.csv"
+    uri = URI.parse(url)
+    response = Net::HTTP.get_response(uri)
+    csv_data = response.body
 
-    schedules, pagination = fetch_schedules
-
-    render json: { schedules:, pagination: pagination }
-  end
-
-  def all_schedules
-    unless params[:origin].present? && params[:destination].present?
-      return render json: { error: 'Origin and destination are required' }
-    end
-
-    schedules, pagination = fetch_schedules(show_all: true)
-
-    render json: { schedules:, pagination: pagination }
-  end
-
-  private
-
-  def fetch_schedules(show_all: false)
-    xxx_url = "https://www.trescruces.com.uy/horarios-destinos/"
-    current_page = params[:pag] || 1
-    origin = params[:origin].upcase
-    destination = params[:destination].upcase
-
-    origin_id = BusesService.get_location_id(origin)
-    destination_id = BusesService.get_location_id(destination)
-
-    query_params = "?origen=#{origin}&destino=#{destination}&origen_id=#{origin_id}&destino_id=#{destination_id}" \
-                    "&empresa_id=#{params[:company_id] || 0}" \
-                    "&dias_ref=#{params[:day] || 'all'}" \
-                    "&turno_ref=#{params[:shift]}" \
-                    "&sec=hd" \
-                    "&pag=#{current_page}"
-
-    uri = URI.parse(xxx_url + query_params)
-    response = HTTParty.get(uri)
-    doc = Nokogiri::HTML(response.body)
-
-    many_results = doc.css('ul.pagination')
-
-    if many_results.present?
-      lis = many_results.css('li')[1..-2]
-      max_pag = lis.last.text.strip
-    end
-
-    schedules = xxx_result_hours_list(doc)
-    pagination = { showing_all: show_all }
-
-    if show_all && !params[:pag].present? && max_pag.present?
-      (2..max_pag.to_i).each do |pag|
-        pag_query_param = "&pag=#{pag}"        
-        uri = URI.parse(xxx_url + query_params + pag_query_param)
-        response = HTTParty.get(uri)
-        doc = Nokogiri::HTML(response.body)
-        schedules += xxx_result_hours_list(doc)
-      end
-    end
-
-    return schedules, pagination.merge({ max: max_pag || 1, current: current_page, query_param: "&pag" })
-  end
-
-  def xxx_result_hours_list(doc)
-    table = doc.css('table .result-hours-list')
     schedules = []
-
-    table.css('tr').each do |row|
-      columns = row.css('td')
+    CSV.parse(csv_data, headers: true) do |row|
+      row_string = row.to_s
+      split_row = row_string.split(';')
       schedules << {
-        departure_time: columns[0].text,
-        frequency: columns[1].text,
-        route: columns[2].text,
-        time: columns[3].text,
-        distance: columns[4].text,
-        company: columns[5].text.strip,
+        company: split_row[0].force_encoding("ISO-8859-1").encode("UTF-8"),
+        origin: split_row[1].force_encoding("ISO-8859-1").encode("UTF-8"),
+        origin_department: split_row[2].force_encoding("ISO-8859-1").encode("UTF-8"),
+        destination: split_row[3].force_encoding("ISO-8859-1").encode("UTF-8"),
+        destination_department: split_row[4].force_encoding("ISO-8859-1").encode("UTF-8"),
+        departure_time: split_row[5].force_encoding("ISO-8859-1").encode("UTF-8"),
+        arrival_time: split_row[6].force_encoding("ISO-8859-1").encode("UTF-8"),
+        route: split_row[7].force_encoding("ISO-8859-1").encode("UTF-8"),
+        days: split_row[8].force_encoding("ISO-8859-1").encode("UTF-8"),
+        place: split_row[9].force_encoding("ISO-8859-1").encode("UTF-8"),
+        place_department: split_row[10].force_encoding("ISO-8859-1").encode("UTF-8"),
+        hour: split_row[11].force_encoding("ISO-8859-1").encode("UTF-8"),
+        start_date: split_row[12].force_encoding("ISO-8859-1").encode("UTF-8"),
+        end_date: split_row[13].force_encoding("ISO-8859-1").encode("UTF-8"),
+        shift_id: split_row[14].force_encoding("ISO-8859-1").encode("UTF-8"),
       }
     end
 
-    return schedules
+    render json: { schedules: schedules }
   end
 end

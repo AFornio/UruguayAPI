@@ -14,9 +14,7 @@ Rails.application.routes.draw do
       end
 
       scope 'buses', controller: 'buses', as: 'buses' do
-        get 'options'
         get 'schedules'
-        get 'all_schedules'
       end
 
       scope 'gasoline', controller: 'gasoline', as: 'gasoline' do
