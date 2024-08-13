@@ -59,17 +59,16 @@ class Api::V1::EventsController < ApplicationController
     case type
       when 'art'
         return {
-          "#{name}": {
-            genre: event_data.css('strong')[0]&.text&.strip,
-            show: event_data.css('strong')[1]&.text&.strip,
-            room: event_data.css('strong')[2]&.text&.strip,
-            img: img,
-          }
+          name: name,
+          genre: event_data.css('strong')[0]&.text&.strip,
+          show: event_data.css('strong')[1]&.text&.strip,
+          room: event_data.css('strong')[2]&.text&.strip,
+          img: img,
         }
 
       when 'cable'
         return {
-          "#{name}": {
+            name: name,
             channel: event_data.css('strong')[0]&.text&.strip,
             shcedule: event_data.css('strong')[1]&.text&.strip,
             genre: event_data.css('strong')[2]&.text&.strip,
@@ -77,19 +76,17 @@ class Api::V1::EventsController < ApplicationController
             protagonists: event_data.css('strong')[4]&.text&.strip,
             img: img,
           }
-        }
+
 
       when 'theater'
-      theater_data = {
-        "#{name}": {
+       return {
+          name: name,
           genre: event_data.css('strong')[0]&.text&.strip,
           director: event_data.css('strong')[1]&.text&.strip,
           room: event_data.css('strong')[2]&.text&.strip,
           img: img,
           today_schedules: extract_schedules(article)
         }
-      }
-      return theater_data
 
     when 'videos'
       director = event_data.css('strong')[1]&.text&.strip
@@ -97,35 +94,32 @@ class Api::V1::EventsController < ApplicationController
       available_on = event_data.css('a').first&.[]('href')
 
       return {
-        "#{name}": {
-          genre: event_data.css('strong')[0]&.text&.strip,
-          director: event_data.css('strong')[1]&.text&.strip,
-          protagonists: event_data.css('strong')[2]&.text&.strip,
-          available_on: event_data.css('a').first&.[]('href'),
-          img: data[:img]
-        }
+        name: name,
+        genre: event_data.css('strong')[0]&.text&.strip,
+        director: event_data.css('strong')[1]&.text&.strip,
+        protagonists: event_data.css('strong')[2]&.text&.strip,
+        available_on: event_data.css('a').first&.[]('href'),
+        img: data[:img]
       }
 
     when 'music'
       return {
-        "#{name}": {
-          cast: event_data.css('strong')[0]&.text&.strip,
-          room: data[:event_data][1]&.text&.strip,
-          locations: data[:event_data][2]&.text&.strip,
-          img: img,
-        }
+        name: name,
+        cast: event_data.css('strong')[0]&.text&.strip,
+        room: data[:event_data][1]&.text&.strip,
+        locations: data[:event_data][2]&.text&.strip,
+        img: img,
       }
 
     when 'movies'
       return {
-        "#{name}": {
+          name: name,
           genre: event_data.css('strong')[0]&.text&.strip,
           director: event_data.css('strong')[1]&.text&.strip,
           protagonists: event_data.css('strong')[2]&.text&.strip,
           img: img,
           today_schedules: extract_schedules(article)
         }
-      }
       end
   end
 
@@ -200,64 +194,59 @@ class Api::V1::EventsController < ApplicationController
   end
 
   def cine_event_data(event)
-    {
-      "#{event.css('.container .name').text.strip}": {
+      {
+        name: "#{event.css('.container .name').text.strip}",
         type: event.css('.container .type').text.strip,
         trailer: event.css('.container a.trailer').first&.[]('href'),
         info: event.css('a').first&.[]('href'),
         img: event.css('a img').first&.[]('src')
       }
-    }
   end
 
   def musica_event_data(event)
-    {
-      "#{event.css('.container .name').text.strip}": {
+      {
+        name: "#{event.css('.container .name').text.strip}",
         featured: event.css('.container .destacado').text.strip,
         venue: event.css('.container .venue').text.strip,
         info: event.css('a').first&.[]('href'),
         img: event.css('a img').first&.[]('src')
       }
-    }
   end
 
   def videos_event_data(event)
-    {
-      "#{event.css('.container .name').text.strip}": {
+      {
+        name: "#{event.css('.container .name').text.strip}",
         featured: event.css('.container .destacado').text.strip,
         genre: event.css('.container p').last.text.strip,
         info: event.css('a').first&.[]('href'),
         img: event.css('a img').first&.[]('src')
       }
-    }
   end
 
   def teatro_event_data(event)
-    {
-      "#{event.css('.container .name').text.strip}": {
+      {
+        name: "#{event.css('.container .name').text.strip}",
         featured: event.css('.container .destacado').text.strip,
         venue: event.css('.container .venue').text.strip,
         info: event.css('a').first&.[]('href'),
         img: event.css('a img').first&.[]('src')
       }
-    }
   end
 
   def cable_event_data(event)
-    {
-      "#{event.css('.container .name').text.strip}": {
+      {
+        name: "#{event.css('.container .name').text.strip}",
         featured: event.css('.container .destacado').text.strip,
         channel: event.css('.container .highlight').last.text.strip,
         genre: event.css('.container p').first.text.strip,
         info: event.css('a').first&.[]('href'),
         img: event.css('a img').first&.[]('src')
       }
-    }
   end
 
   def arte_event_data(event)
-    {
-      "#{event.css('.container .name').text.strip}": {
+      {
+        name: "#{event.css('.container .name').text.strip}",
         featured: event.css('.container .destacado').text.strip,
         genre: event.css('.container p').first.text.strip,
         artist: event.css('.container p')[1]&.text&.strip,
@@ -265,6 +254,5 @@ class Api::V1::EventsController < ApplicationController
         info: event.css('a').first&.[]('href'),
         img: event.css('a img').first&.[]('src')
       }
-    }
   end
 end
