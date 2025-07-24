@@ -23,44 +23,46 @@ https://uruguayapi.onrender.com/
 
 # API Endpoints
 
+
 <details>
   <summary>Cédula de Identidad - CI</summary>
 
-### GET /api/v1/ci/validate?ci=
+  ### GET /api/v1/ci/validate?ci=
 
-Valida un número de CI.
+  Valida un número de CI.
 
-**Parámetros**
+  **Parámetros**
 
-- CI: El número de CI a validar. Se extrae los números de la cadena de caracteres y chequea el dígito verificador, por
-  lo que estos formatos son validos - 1.111.111-1, 1_111_111_1, 1.111.111/1
+  - CI: El número de CI a validar. Se extrae los números de la cadena de caracteres y chequea el dígito verificador, por
+    lo que estos formatos son validos - 1.111.111-1, 1_111_111_1, 1.111.111/1
 
-**Respuesta**
+  **Respuesta**
 
-- 200 OK: Devuelve True/False que indica si el número de CI es válido.
+  - 200 OK: Devuelve True/False que indica si el número de CI es válido.
 
-### GET /api/v1/ci/validate_digit?ci=
+  ### GET /api/v1/ci/validate_digit?ci=
 
-Valida el último dígito de un número de CI. Se extraen los primeros 7 números de la CI y devuevlve el digito
-verificador
+  Valida el último dígito de un número de CI. Se extraen los primeros 7 números de la CI y devuevlve el digito
+  verificador
 
-**Parámetros**
+  **Parámetros**
 
-- CI: El número de CI para validar el último dígito.
+  - CI: El número de CI para validar el último dígito.
 
-**Respuesta**
+  **Respuesta**
 
-- 200 OK: Devuelve el último digito verificador para la CI proporcionada.
-- 422 Unprocessable Entities: Si se requiere el número de CI.
+  - 200 OK: Devuelve el último digito verificador para la CI proporcionada.
+  - 422 Unprocessable Entities: Si se requiere el número de CI.
 
-### GET /api/v1/ci/random
+  ### GET /api/v1/ci/random
 
-Devuelve un número de CI válido aleatorio.
+  Devuelve un número de CI válido aleatorio.
 
-**Respuesta**
+  **Respuesta**
 
-- 200 OK: Devuelve un número de CI válido aleatorio.
+  - 200 OK: Devuelve un número de CI válido aleatorio.
 </details>
+
 <details>
   <summary>Buses - Tres Cruces</summary>
 
@@ -72,6 +74,7 @@ Devuelve todos los datos de los horarios interdepartamentales de corta, media, l
 
 - 200 OK: Devuelve un objeto JSON con todos los datos de los horarios de autobuses.
 </details>
+
 
 <details>
   <summary>Gasolina - Ancap</summary>
@@ -121,6 +124,7 @@ Obtiene los precios de un combustible específico de Uruguay (Ancap).
 - 500 Internal Server Error: Si ocurre algún error en el servidor al obtener los precios de combustibles.
 </details>
 
+
 <details>
   <summary>Holidays</summary>
 
@@ -130,15 +134,16 @@ Obtiene una lista de todas las festividades y días feriados en Uruguay para el 
 
 </details>
 
+
 <details>
-<details>
-  <summary>Notiicas</summary>
+  <summary>Noticias</summary>
 
 ### GET /api/v1/news/headlines
 
 Obtiene una lista de los titulares de noticias más recientes en Uruguay.
 
 </details>
+
 
 <details>
 
@@ -178,6 +183,8 @@ Obtiene una lista de items para una categoría específica.
 - 404 Not Found: Si el tipo de evento solicitado no existe en la lista de categorías.
 
 - 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.</details>
+</details>
+
 <details>
   <summary>BANCOS</summary>
 
@@ -198,6 +205,47 @@ Obtiene los beneficios existenes para el tipo de banco
 - 200 OK: Devuelve un objeto JSON que contiene una lista de items
 
 - 500 Internal Server Error: Si ocurre algún error en el servidor al obtener la lista de items.
+</details>
+
+<details>
+  <summary>Granos - Precios de Mercado</summary>
+
+  ### GET /api/v1/grain/prices
+
+  Obtiene los precios actuales de granos nacionales e internacionales del mercado.
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con los precios de granos, estructurados en categorías "international" y "national".
+    Cada categoría contiene objetos de granos, donde cada grano tiene fechas y, para cada fecha, el precio, la moneda
+    ("US$/TON") y, si está disponible, el logo de la referencia.
+  - 404 Not Found: Si no se encuentran datos de precios en la fuente.
+  - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos.
+</details>
+
+<details>
+  <summary>Ganado - Precios de Mercado</summary>
+
+  ### GET /api/v1/cattle/prices
+
+  Obtiene los precios actuales del mercado ganadero, incluyendo ganado gordo, ovinos y reposición, desde la Asociación
+  Consorcios Regionales de Ganaderos (ACG).
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con los precios del ganado. La respuesta se estructura en tres categorías:
+    `ganado_gordos`, `ovinos`, y `reposicion`. Cada categoría contiene objetos de tipo de ganado, donde cada uno incluye
+    el `price`, `currency` (siempre "USD"), una `description` ("por kilo en cuarta balanza"), y opcionalmente el
+    `logo` de la referencia.
+  - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos.
 </details>
 
 ---

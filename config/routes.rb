@@ -39,6 +39,14 @@ Rails.application.routes.draw do
       scope 'news', controller: 'news', as: 'news' do
         get 'headlines'
       end
+
+      scope 'grain', controller: 'grain', as: 'grain' do
+        get 'prices'
+      end
+
+      scope 'cattle', controller: 'cattle', as: 'cattle' do
+        get 'prices'
+      end
     end
   end
 end

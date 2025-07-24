@@ -18,12 +18,13 @@ class Api::V1::BanksController < ApplicationController
 
       currency = I18n.transliterate(currency.gsub(' ', '_').downcase)
       rates[currency] = {
-        bid: bid,
-        ask: ask,
-        spread_bid: spread_bid,
-        spread_ask: spread_ask
+        bid:,
+        ask:,
+        spread_bid:,
+        spread_ask:
       }
     end
+
     render json: rates
   end
   
@@ -65,4 +66,4 @@ class Api::V1::BanksController < ApplicationController
 
     render json: discounts_by_category
   end
-  end
+end
