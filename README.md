@@ -248,6 +248,103 @@ Obtiene los beneficios existenes para el tipo de banco
   - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos.
 </details>
 
+<details>
+  <summary>Canasta de Alimentos - Supermercados</summary>
+
+  ### GET /api/v1/supermarkets/food_basket_store_product?store=:store&product=:product
+
+  Obtiene una lista de productos específicos de la canasta básica de un supermercado determinado.
+
+  **Parámetros**
+
+  - `store`: El nombre del supermercado. Opciones válidas: "tienda_inglesa", "disco", "devoto", "tata".
+  - `product`: El nombre del producto de la canasta. Opciones válidas: "arroz", "azucar", "panes", "leche", "aceite", "yerba".
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con los productos encontrados para el supermercado y producto especificados.
+    ```json
+    {
+      "products": {
+        "nombre_del_supermercado": [
+          {
+            "name": "Nombre del Producto",
+            "price": "Precio del Producto",
+            "image": "URL de la Imagen (opcional)",
+            "brand": "Marca del Producto (opcional)"
+          }
+        ]
+      }
+    }
+    ```
+  - 404 Not Found: Si el supermercado o el producto no son válidos, o si no se encuentran URLs para el producto en ese supermercado.
+
+  ### GET /api/v1/supermarkets/food_basket_store?store=:store
+
+  Obtiene todos los productos de la canasta básica para un supermercado específico.
+
+  **Parámetros**
+
+  - `store`: El nombre del supermercado. Opciones válidas: "tienda_inglesa", "disco", "devoto", "tata".
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con todos los productos de la canasta encontrados para el supermercado especificado.
+    ```json
+    {
+      "products": {
+        "nombre_del_supermercado": [
+          {
+            "name": "Nombre del Producto",
+            "price": "Precio del Producto",
+            "image": "URL de la Imagen (opcional)",
+            "brand": "Marca del Producto (opcional)"
+          },
+          // ... más productos
+        ]
+      }
+    }
+    ```
+  - 404 Not Found: Si el supermercado no es válido.
+
+  ### GET /api/v1/supermarkets/food_basket
+
+  Obtiene todos los productos de la canasta básica de todos los supermercados disponibles.
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON que contiene los productos de la canasta básica organizados por supermercado.
+    ```json
+    {
+      "products": {
+        "tienda_inglesa": [
+          {
+            "name": "Nombre del Producto",
+            "price": "Precio del Producto",
+            "image": "URL de la Imagen (opcional)",
+            "brand": "Marca del Producto (opcional)"
+          }
+          // ... más productos de Tienda Inglesa
+        ],
+        "disco": [
+          {
+            "name": "Nombre del Producto",
+            "price": "Precio del Producto",
+            "image": "URL de la Imagen (opcional)",
+            "brand": "Marca del Producto (opcional)"
+          }
+          // ... más productos de Disco
+        ],
+        // ... otros supermercados y sus productos
+      }
+    }
+    ```
+  - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos de los supermercados.
+</details>
 ---
 
 ### Inspirado por 💡:

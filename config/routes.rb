@@ -47,6 +47,12 @@ Rails.application.routes.draw do
       scope 'cattle', controller: 'cattle', as: 'cattle' do
         get 'prices'
       end
+
+      scope 'supermarkets', controller: 'supermarkets', as: 'supermarkets' do
+        get 'food_basket', to: 'supermarkets#food_basket'
+        get 'food_basket/:store', to: 'supermarkets#food_basket_store'
+        get 'food_basket/:store/:product', to: 'supermarkets#food_basket_store_product'
+      end
     end
   end
 end

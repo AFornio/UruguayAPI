@@ -15,6 +15,7 @@ gem "puma", "~> 6.0"
 gem 'ci_uy'
 gem 'httparty'
 gem 'nokogiri'
+gem 'concurrent-ruby'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"

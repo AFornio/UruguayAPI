@@ -224,6 +224,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   ci_uy
+  concurrent-ruby
   debug
   httparty
   nokogiri
