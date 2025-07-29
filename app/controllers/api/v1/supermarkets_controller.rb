@@ -1,5 +1,4 @@
 class Api::V1::SupermarketsController < ApplicationController
-  require 'concurrent'
   require 'httparty'
   require 'nokogiri'
   require 'json'
@@ -141,6 +140,7 @@ class Api::V1::SupermarketsController < ApplicationController
 		}
   }.freeze
 
+
   def food_basket_store_product
     return render json: { error: "Store not found" }, status: :not_found unless SUPERMARKETS.include?(params[:store])
     return render json: { error: "Product not found" }, status: :not_found unless BASKET_PRODUCTS.include?(params[:product])
@@ -150,7 +150,7 @@ class Api::V1::SupermarketsController < ApplicationController
     urls = FOOD_BASKET.dig(product.to_sym, store)
     return render json: { error: "Product URLs not found" }, status: :not_found if urls.nil? || urls.empty?
 
-    products_data = fetch_products_concurrently(store, urls)
+    products_data = fetch_products_sequentially(store, urls)
     render json: { products: { store => products_data } }
   end
  
@@ -160,102 +160,146 @@ class Api::V1::SupermarketsController < ApplicationController
     store = params[:store].to_sym
     urls = FOOD_BASKET.values.map { |product_stores| product_stores[store] }.flatten.compact
 
-    products_data = fetch_products_concurrently(store, urls)
+    products_data = fetch_products_sequentially(store, urls)
     render json: { products: { store => products_data } }
   end
 
  
   def food_basket
-    products_by_store = Concurrent::Hash.new
+    products_by_store = {}
 
-    futures = []
     FOOD_BASKET.each do |product_name, stores_data|
       stores_data.each do |store_name, urls|
-        futures << Concurrent::Future.execute do
-          fetched_products = fetch_products_concurrently(store_name, urls)
-          products_by_store.merge!(store_name => (products_by_store[store_name] || []) + fetched_products)
-        end
+        fetched_products = fetch_products_for_product_and_store(store_name, urls)
+        products_by_store[store_name] = (products_by_store[store_name] || []) + fetched_products
       end
     end
-
-    futures.each(&:value)
 
     render json: { products: products_by_store }
   end
 
   private
 
- 
-  def fetch_products_concurrently(store, urls)
-    all_products_for_store = Concurrent::Array.new
+  def fetch_products_for_product_and_store(store, urls)
+    all_products_for_store = []
+    urls.each do |url|
+      begin
+        url = url.strip
+        next if url.empty?
 
-    futures = urls.map do |url|
-      Concurrent::Future.execute do
-        begin
-          url = url.strip
-          next [] if url.empty?
+        response = HTTParty.get(url)
+        
+        product_collection_key = CONFIGURATION[store.to_sym][:product_collection_key]
+        key_mapping = CONFIGURATION[store.to_sym][:key_mapping]
 
-          response = HTTParty.get(url)
-          
-          product_collection_key = CONFIGURATION[store.to_sym][:product_collection_key]
-          key_mapping = CONFIGURATION[store.to_sym][:key_mapping]
+        product_collection = extract_json_data(response, store)
 
-          product_collection = extract_json_data(response, store)
-
-         
-          product_collection_key.split('.').each do |nk|
-            if product_collection.is_a?(Hash) && product_collection.key?(nk)
-              product_collection = product_collection[nk]
-            elsif product_collection.is_a?(Array) && nk.match?(/^\d+$/)
-              index = nk.to_i
-              product_collection = product_collection[index] if product_collection.length > index
-            else
-              product_collection = nil
-              break
-            end
+       
+        product_collection_key.split('.').each do |nk|
+          if product_collection.is_a?(Hash) && product_collection.key?(nk)
+            product_collection = product_collection[nk]
+          elsif product_collection.is_a?(Array) && nk.match?(/^\d+$/)
+            index = nk.to_i
+            product_collection = product_collection[index] if product_collection.length > index
+          else
+            product_collection = nil
+            break
           end
-
-          next [] if product_collection.nil? || !product_collection.is_a?(Array)
-
-         
-          product_collection.map do |product_raw_data|
-            product_info = {}
-            key_mapping.each do |original_key_path, desired_key|
-              value = product_raw_data
-              original_key_path.split('.').each do |segment|
-                if value.is_a?(Hash) && value.key?(segment)
-                  value = value[segment]
-                elsif value.is_a?(Array) && segment.match?(/^\d+$/)
-                  index = segment.to_i
-                  value = value[index] if value.length > index
-                else
-                  value = nil
-                  break
-                end
-              end
-              product_info[desired_key.to_sym] = value
-            end
-            product_info
-          end
-        rescue HTTParty::Error => e
-          Rails.logger.error("HTTParty error fetching #{url} for #{store}: #{e.message}")
-          []
-        rescue JSON::ParserError => e
-          Rails.logger.error("JSON parsing error for #{url} for #{store}: #{e.message}")
-          []
-        rescue StandardError => e
-          Rails.logger.error("Unexpected error fetching #{url} for #{store}: #{e.message}")
-          []
         end
+
+        next if product_collection.nil? || !product_collection.is_a?(Array)
+
+       
+        products = product_collection.map do |product_raw_data|
+          product_info = {}
+          key_mapping.each do |original_key_path, desired_key|
+            value = product_raw_data
+            original_key_path.split('.').each do |segment|
+              if value.is_a?(Hash) && value.key?(segment)
+                value = value[segment]
+              elsif value.is_a?(Array) && segment.match?(/^\d+$/)
+                index = segment.to_i
+                value = value[index] if value.length > index
+              else
+                value = nil
+                break
+              end
+            end
+            product_info[desired_key.to_sym] = value
+          end
+          product_info
+        end
+        all_products_for_store.concat(products)
+      rescue HTTParty::Error => e
+        Rails.logger.error("HTTParty error fetching #{url} for #{store}: #{e.message}")
+      rescue JSON::ParserError => e
+        Rails.logger.error("JSON parsing error for #{url} for #{store}: #{e.message}")
+      rescue StandardError => e
+        Rails.logger.error("Unexpected error fetching #{url} for #{store}: #{e.message}")
       end
     end
+    all_products_for_store
+  end
 
-    futures.each do |future|
-      result = future.value
-      all_products_for_store.concat(result) if result.is_a?(Array)
+  def fetch_products_sequentially(store, urls)
+    all_products_for_store = []
+    urls.each do |url|
+      begin
+        url = url.strip
+        next if url.empty?
+
+        response = HTTParty.get(url)
+        
+        product_collection_key = CONFIGURATION[store.to_sym][:product_collection_key]
+        key_mapping = CONFIGURATION[store.to_sym][:key_mapping]
+
+        product_collection = extract_json_data(response, store)
+
+       
+        product_collection_key.split('.').each do |nk|
+          if product_collection.is_a?(Hash) && product_collection.key?(nk)
+            product_collection = product_collection[nk]
+          elsif product_collection.is_a?(Array) && nk.match?(/^\d+$/)
+            index = nk.to_i
+            product_collection = product_collection[index] if product_collection.length > index
+          else
+            product_collection = nil
+            break
+          end
+        end
+
+        next if product_collection.nil? || !product_collection.is_a?(Array)
+
+       
+        products = product_collection.map do |product_raw_data|
+          product_info = {}
+          key_mapping.each do |original_key_path, desired_key|
+            value = product_raw_data
+            original_key_path.split('.').each do |segment|
+              if value.is_a?(Hash) && value.key?(segment)
+                value = value[segment]
+              elsif value.is_a?(Array) && segment.match?(/^\d+$/)
+                index = segment.to_i
+                value = value[index] if value.length > index
+              else
+                value = nil
+                break
+              end
+            end
+            product_info[desired_key.to_sym] = value
+          end
+          product_info
+        end
+        all_products_for_store.concat(products)
+      rescue HTTParty::Error => e
+        Rails.logger.error("HTTParty error fetching #{url} for #{store}: #{e.message}")
+      rescue JSON::ParserError => e
+        Rails.logger.error("JSON parsing error for #{url} for #{store}: #{e.message}")
+      rescue StandardError => e
+        Rails.logger.error("Unexpected error fetching #{url} for #{store}: #{e.message}")
+      end
     end
-    
-    all_products_for_store.to_a
+    all_products_for_store
   end
 
   def extract_json_data(response, store)
