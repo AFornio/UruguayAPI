@@ -1,3 +1,5 @@
+require 'csv'
+
 class Api::V1::BusesController < ApplicationController
   def schedules
     # Empresa;Origen;Depto.Origen;Destino;Depto.Destino;H.Salida;H.Llegada;Recorrido;Dias;Lugar;Depto.Lugar;Hora;F.Inicio;F.Fin;Id.Turno
