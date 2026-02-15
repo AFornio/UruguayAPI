@@ -53,6 +53,7 @@ Rails.application.routes.draw do
         get 'aguinaldo'
         get 'vacation'
         get 'dismissal'
+        get 'hourly_rate'
       end
 
       scope 'tolls', controller: 'tolls', as: 'tolls' do

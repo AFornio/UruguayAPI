@@ -76,6 +76,21 @@ class Api::V1::SalaryController < ApplicationController
     render json: result
   end
 
+  def hourly_rate
+    salary = params[:salary]
+    sector = params[:sector]
+
+    return render json: { error: "El parámetro 'salary' es requerido" }, status: :unprocessable_entity if salary.blank?
+    return render json: { error: "El salario debe ser un número positivo" }, status: :unprocessable_entity if salary.to_f <= 0
+    return render json: { error: "El parámetro 'sector' es requerido" }, status: :unprocessable_entity if sector.blank?
+
+    result = HourlyRateService.new(salary:, sector:).calculate
+
+    return render json: { error: "Sector inválido. Opciones: commerce, industry, standard, domestic, rural" }, status: :unprocessable_entity unless result
+
+    render json: result
+  end
+
   private
 
   def parse_salaries(input)

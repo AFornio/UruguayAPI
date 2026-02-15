@@ -556,6 +556,57 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>Valor Hora de Trabajo - Calculadora</summary>
+
+  ### GET /api/v1/salary/hourly_rate?salary=&sector=
+
+  Calcula el valor hora de trabajo según el sector laboral, incluyendo recargos por horas extra,
+  feriados y nocturnidad.
+
+  **Fórmula:** `Valor hora = Salario mensual ÷ Divisor mensual`
+
+  **Parámetros**
+
+  - `salary` (requerido): Salario mensual nominal en pesos uruguayos.
+  - `sector` (requerido): Sector laboral. Opciones: `commerce`, `industry`, `standard`, `domestic`, `rural`.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con el valor hora y recargos.
+    ```json
+    {
+      "sector": "commerce",
+      "weekly_hours": 44,
+      "monthly_divisor": 190,
+      "base_hourly_rate": 263.16,
+      "overtime_rate": 526.32,
+      "holiday_rate": 657.89,
+      "night_rate": 315.79,
+      "currency": "UYU"
+    }
+    ```
+  - 422 Unprocessable Entity: Si faltan parámetros o el sector es inválido.
+
+  **Divisores por sector**
+
+  | Sector | Horas/semana | Divisor mensual |
+  |--------|-------------|-----------------|
+  | commerce | 44 | 190 |
+  | domestic | 44 | 190 |
+  | industry | 48 | 208 |
+  | rural | 48 | 208 |
+  | standard | 40 | 173 |
+
+  **Recargos**
+
+  | Tipo | Multiplicador |
+  |------|--------------|
+  | Horas extra diurnas | 2× base |
+  | Feriados/descanso | 2.5× base |
+  | Nocturnidad (22:00-06:00) | 1.2× base |
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices
