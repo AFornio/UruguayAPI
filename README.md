@@ -667,6 +667,64 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>UTE - Tarifas Eléctricas Residenciales</summary>
+
+  ### GET /api/v1/ute/tariffs
+
+  Obtiene las tarifas eléctricas residenciales vigentes de UTE: Simple (TRS),
+  Doble Horario (TRD) y Triple Horario (TRT).
+
+  **Fuente de datos:** UTE (ute.com.uy). Las tarifas se actualizan una vez al año (1 de enero).
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "trs": {
+        "type": "simple",
+        "tiers": [
+          { "tier": "1-100 kWh", "price_per_kwh": 6.744 },
+          { "tier": "101-600 kWh", "price_per_kwh": 8.452 },
+          { "tier": "601+ kWh", "price_per_kwh": 10.539 }
+        ]
+      },
+      "trd": {
+        "type": "doble_horario",
+        "periods": [
+          { "period": "punta", "price_per_kwh": 12.034 },
+          { "period": "fuera de punta", "price_per_kwh": 4.771 }
+        ]
+      },
+      "trt": {
+        "type": "triple_horario",
+        "periods": [
+          { "period": "punta", "price_per_kwh": 12.034 },
+          { "period": "valle", "price_per_kwh": 2.443 },
+          { "period": "llano", "price_per_kwh": 5.172 }
+        ]
+      },
+      "vat_rate": 0.22,
+      "currency": "UYU",
+      "note": "Precios sin IVA (22%)"
+    }
+    ```
+  - 500 Internal Server Error: Si falla la conexión con UTE.
+
+  **Tarifas disponibles**
+
+  | Tarifa | Descripción |
+  |--------|-------------|
+  | TRS | Simple — por escalones de consumo mensual |
+  | TRD | Doble Horario — punta (17-23h) y fuera de punta |
+  | TRT | Triple Horario — punta, llano y valle (00-07h) |
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices

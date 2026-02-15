@@ -69,6 +69,10 @@ Rails.application.routes.draw do
         get 'indicators'
       end
 
+      scope 'ute', controller: 'ute', as: 'ute' do
+        get 'tariffs'
+      end
+
       scope 'lottery', controller: 'lottery', as: 'lottery' do
         get 'games'
         get ':game', to: 'lottery#result', as: 'result'
