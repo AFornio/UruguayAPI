@@ -69,6 +69,11 @@ Rails.application.routes.draw do
         get 'indicators'
       end
 
+      scope 'lottery', controller: 'lottery', as: 'lottery' do
+        get 'games'
+        get ':game', to: 'lottery#result', as: 'result'
+      end
+
       scope 'weather', controller: 'weather', as: 'weather' do
         get 'forecast'
         get 'current'

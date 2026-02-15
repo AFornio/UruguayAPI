@@ -921,6 +921,64 @@ Obtiene los beneficios existenes para el tipo de banco
   | Área Metropolitana (M) | Montevideo, Canelones, San José |
   | Punta del Este (PE) | Maldonado |
 </details>
+
+<details>
+  <summary>Lotería - Resultados de Sorteos</summary>
+
+  ### GET /api/v1/lottery/:game
+
+  Obtiene el resultado más reciente del juego de lotería especificado.
+
+  **Fuente de datos:** resultadosorteo.net (agrega resultados oficiales de La Banca / DNLQ).
+
+  **Parámetros**
+
+  - `game` (requerido en la URL): Nombre del juego. Opciones:
+    - `cinco_de_oro` — 5 de Oro (domingos y miércoles)
+    - `quiniela_nocturna` — Quiniela Nocturna (lunes a sábado)
+    - `quiniela_vespertina` — Quiniela Vespertina (lunes a viernes)
+    - `tombola_nocturna` — Tómbola Nocturna (lunes a sábado)
+    - `tombola_vespertina` — Tómbola Vespertina (lunes a viernes)
+
+  **Respuestas**
+
+  - 200 OK (5 de Oro):
+    ```json
+    {
+      "game": "cinco_de_oro",
+      "date": "miércoles 12 de febrero 2026",
+      "numbers": [8, 23, 27, 44, 45],
+      "extra_number": 39
+    }
+    ```
+  - 200 OK (Quiniela/Tómbola):
+    ```json
+    {
+      "game": "quiniela_nocturna",
+      "date": "sábado 14 de febrero 2026",
+      "numbers": {
+        "1": 867, "2": 816, "3": 127, "4": 453, "5": 912,
+        "6": 345, "7": 678, "8": 901, "9": 234, "10": 567,
+        "11": 123, "12": 456, "13": 789, "14": 012, "15": 345,
+        "16": 678, "17": 901, "18": 234, "19": 567, "20": 890
+      }
+    }
+    ```
+  - 404 Not Found: Si el juego no es válido.
+
+  ### GET /api/v1/lottery/games
+
+  Devuelve la lista de juegos disponibles.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "games": ["cinco_de_oro", "quiniela_nocturna", "quiniela_vespertina", "tombola_nocturna", "tombola_vespertina"]
+    }
+    ```
+</details>
 ---
 
 ### Inspirado por 💡:
