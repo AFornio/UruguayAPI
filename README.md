@@ -345,6 +345,65 @@ Obtiene los beneficios existenes para el tipo de banco
     ```
   - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos de los supermercados.
 </details>
+
+<details>
+  <summary>Salario Líquido - Calculadora</summary>
+
+  ### GET /api/v1/salary/net?salary=
+
+  Calcula el sueldo líquido (neto) a partir del salario nominal bruto mensual, aplicando las deducciones obligatorias
+  del sistema uruguayo: aportes jubilatorios (BPS), seguro de salud (FONASA), Fondo de Reconversión Laboral (FRL) e
+  Impuesto a la Renta (IRPF).
+
+  **Parámetros**
+
+  - `salary` (requerido): Salario nominal bruto mensual en pesos uruguayos.
+  - `has_spouse` (opcional, default: false): Si el trabajador tiene cónyuge a cargo en FONASA.
+  - `children` (opcional, default: 0): Cantidad de hijos sin discapacidad a cargo.
+  - `disabled_children` (opcional, default: 0): Cantidad de hijos con discapacidad a cargo.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con el desglose completo del cálculo.
+    ```json
+    {
+      "gross_salary": 50000.0,
+      "deductions": {
+        "bps": 7500.0,
+        "fonasa": 2250.0,
+        "frl": 50.0,
+        "irpf": 0.0,
+        "total": 9800.0
+      },
+      "net_salary": 40200.0,
+      "bpc": 6177,
+      "currency": "UYU"
+    }
+    ```
+  - 422 Unprocessable Entity: Si el parámetro `salary` no es proporcionado o no es un número positivo.
+
+  **Deducciones aplicadas**
+
+  | Concepto | Tasa |
+  |----------|------|
+  | BPS (Jubilatorio) | 15% (tope salarial: $236.309) |
+  | FONASA | 3% o 4.5% (según ingreso) + 2% cónyuge + 1.5% hijos |
+  | FRL | 0.1% |
+  | IRPF | Franjas progresivas (0% a 36%) |
+
+  **Franjas IRPF (en BPC mensuales)**
+
+  | Desde | Hasta | Tasa |
+  |-------|-------|------|
+  | 0 | 7 BPC | 0% |
+  | 7 | 10 BPC | 10% |
+  | 10 | 15 BPC | 15% |
+  | 15 | 30 BPC | 24% |
+  | 30 | 50 BPC | 25% |
+  | 50 | 75 BPC | 27% |
+  | 75 | 115 BPC | 31% |
+  | 115+ | - | 36% |
+</details>
 ---
 
 ### Inspirado por 💡:
