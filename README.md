@@ -404,6 +404,68 @@ Obtiene los beneficios existenes para el tipo de banco
   | 75 | 115 BPC | 31% |
   | 115+ | - | 36% |
 </details>
+
+<details>
+  <summary>Peajes - Tarifas y Ubicaciones</summary>
+
+  ### GET /api/v1/tolls/prices
+
+  Obtiene las tarifas vigentes de los peajes en Uruguay y las ubicaciones de los 15 peajes nacionales.
+
+  **Fuentes de datos**
+
+  - Tarifas: Ministerio de Transporte y Obras Públicas (gub.uy)
+  - Ubicaciones: datosuruguay.com
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con tarifas por categoría de vehículo, ubicaciones de peajes y la moneda.
+    ```json
+    {
+      "rates": [
+        {
+          "category": "Categoría 1 - Autos y camionetas",
+          "basic": "$ 120",
+          "telepeaje": "$ 100",
+          "sucive": "$ 90"
+        }
+      ],
+      "locations": [
+        {
+          "name": "Barra de Santa Lucía",
+          "route": "Ruta 1",
+          "km": "23.5"
+        }
+      ],
+      "currency": "UYU"
+    }
+    ```
+  - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos.
+
+  **Categorías de vehículos**
+
+  | Categoría | Descripción |
+  |-----------|-------------|
+  | 1 | Autos y camionetas (2 ejes, 4 ruedas no duales) |
+  | 2 | Tractor sin semirremolque y ómnibus hasta 25 pasajeros |
+  | 3 | Vehículos de carga de hasta 3 ejes y 6 ruedas |
+  | 4 | Ómnibus de más de 25 pasajeros |
+  | 5 | Vehículos de carga de 3 ejes y más de 6 ruedas |
+  | 6 | Vehículos de 4 o más ejes, no tritrenes |
+  | 7 | Vehículos de carga tritrenes |
+
+  **Modalidades de pago**
+
+  | Modalidad | Descripción |
+  |-----------|-------------|
+  | Básica | Pago en efectivo en cabina |
+  | Telepeaje | Pago electrónico con tag |
+  | SUCIVE | Sistema Único de Cobro de Ingresos Vehiculares |
+</details>
 ---
 
 ### Inspirado por 💡:
