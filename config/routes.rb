@@ -69,6 +69,12 @@ Rails.application.routes.draw do
         get 'indicators'
       end
 
+      scope 'weather', controller: 'weather', as: 'weather' do
+        get 'forecast'
+        get 'current'
+        get 'alerts'
+      end
+
       scope 'supermarkets', controller: 'supermarkets', as: 'supermarkets' do
         get 'food_basket', to: 'supermarkets#food_basket'
         get 'food_basket/:store', to: 'supermarkets#food_basket_store'

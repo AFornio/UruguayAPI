@@ -809,6 +809,118 @@ Obtiene los beneficios existenes para el tipo de banco
   | imsn | Índice Medio de Salarios Nominales |
   | iccv | Índice de Costo de la Construcción de Viviendas |
 </details>
+
+<details>
+  <summary>Clima - Pronóstico y Condiciones Actuales (INUMET)</summary>
+
+  ### GET /api/v1/weather/forecast?department=
+
+  Obtiene el pronóstico extendido (hasta 7 días) para un departamento, con temperatura,
+  probabilidad de lluvia, estado del cielo y detalle por período (mañana/tarde/noche).
+
+  **Fuente de datos:** INUMET (inumet.gub.uy) - Endpoints JSON internos.
+
+  **Parámetros**
+
+  - `department` (requerido): Nombre del departamento. Opciones: `artigas`, `canelones`, `cerro_largo`, `colonia`,
+    `durazno`, `flores`, `florida`, `lavalleja`, `maldonado`, `montevideo`, `paysandu`, `rio_negro`, `rivera`,
+    `rocha`, `salto`, `san_jose`, `soriano`, `tacuarembo`, `treinta_y_tres`.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "department": "montevideo",
+      "zone": "Área Metropolitana",
+      "published_at": "2026-02-15 18:00",
+      "forecaster": "Fabiana Rozza",
+      "forecast": [
+        {
+          "day": "Domingo 15",
+          "temp_min": 18,
+          "temp_max": 28,
+          "weather_condition": "Nublado",
+          "rain_probability": "Media",
+          "periods": [
+            {
+              "period": "Mañana",
+              "description": "Nuboso y cubierto.",
+              "evolution": "Precipitaciones y tormentas.",
+              "wind": "NE y E 10-30 km/h"
+            }
+          ]
+        }
+      ]
+    }
+    ```
+  - 404 Not Found: Si el departamento no es válido.
+  - 500 Internal Server Error: Si falla la conexión con INUMET.
+
+  ### GET /api/v1/weather/current?department=
+
+  Obtiene las condiciones meteorológicas actuales de las estaciones del departamento:
+  temperatura, humedad, viento, presión atmosférica y precipitación.
+
+  **Parámetros**
+
+  - `department` (requerido): Nombre del departamento.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "department": "montevideo",
+      "timestamp": "2026-02-15T17:00:00.000-03:00",
+      "stations": [
+        {
+          "name": "Prado",
+          "latitude": -34.8607,
+          "longitude": -56.2079,
+          "readings": {
+            "temperature": 23.5,
+            "humidity": 80,
+            "wind_direction": 200,
+            "wind_speed_kmh": 22.2,
+            "pressure_hpa": 1014.5,
+            "precipitation_mm": 0.2
+          }
+        }
+      ]
+    }
+    ```
+
+  ### GET /api/v1/weather/alerts
+
+  Obtiene las alertas meteorológicas activas emitidas por INUMET.
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "has_alerts": false,
+      "alerts": []
+    }
+    ```
+
+  **Zonas geográficas y departamentos**
+
+  | Zona | Departamentos |
+  |------|--------------|
+  | Noroeste (NW) | Artigas, Salto |
+  | Noreste (NE) | Rivera, Tacuarembó, Cerro Largo |
+  | Centro-Sur (C) | Durazno, Flores, Florida |
+  | Suroeste (SO) | Colonia, Paysandú, Río Negro, Soriano |
+  | Este (E) | Lavalleja, Rocha, Treinta y Tres |
+  | Área Metropolitana (M) | Montevideo, Canelones, San José |
+  | Punta del Este (PE) | Maldonado |
+</details>
 ---
 
 ### Inspirado por 💡:
