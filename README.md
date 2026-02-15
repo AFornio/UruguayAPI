@@ -466,6 +466,51 @@ Obtiene los beneficios existenes para el tipo de banco
   | Telepeaje | Pago electrónico con tag |
   | SUCIVE | Sistema Único de Cobro de Ingresos Vehiculares |
 </details>
+
+<details>
+  <summary>Economía - Indicadores Vigentes</summary>
+
+  ### GET /api/v1/economy/values
+
+  Obtiene los indicadores económicos vigentes de Uruguay: BPC, UR, UI, salario mínimo y otros valores
+  publicados por el BPS (Banco de Previsión Social).
+
+  **Fuente de datos:** BPS - Valores Actuales (bps.gub.uy)
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con los indicadores económicos vigentes.
+    ```json
+    {
+      "bpc": { "value": 6864.0, "currency": "UYU" },
+      "minimum_wage": { "value": 24572.0, "currency": "UYU" },
+      "domestic_minimum_wage": { "value": 31178.0, "currency": "UYU" },
+      "ur": { "value": 1851.83, "currency": "UYU" },
+      "ui": { "value": 6.4401, "currency": "UYU" },
+      "mutual_quota": { "value": 1820.0, "currency": "UYU" },
+      "cpe": { "value": 6693.0, "currency": "UYU" },
+      "bfc": { "value": 1847.96, "currency": "UYU" }
+    }
+    ```
+  - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos.
+
+  **Indicadores disponibles**
+
+  | Clave | Descripción |
+  |-------|-------------|
+  | bpc | Base de Prestaciones y Contribuciones |
+  | minimum_wage | Salario mínimo nacional |
+  | domestic_minimum_wage | Salario mínimo servicio doméstico |
+  | ur | Unidad Reajustable |
+  | ui | Unidad Indexada |
+  | mutual_quota | Cuota mutual |
+  | cpe | Costo Promedio Equivalente |
+  | bfc | Base Ficta de Contribución |
+</details>
 ---
 
 ### Inspirado por 💡:
