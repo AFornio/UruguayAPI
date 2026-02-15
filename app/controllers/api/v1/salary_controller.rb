@@ -56,6 +56,26 @@ class Api::V1::SalaryController < ApplicationController
     render json: result
   end
 
+  def dismissal
+    salary = params[:salary]
+    years_worked = params[:years_worked]
+
+    return render json: { error: "El parámetro 'salary' es requerido" }, status: :unprocessable_entity if salary.blank?
+    return render json: { error: "El salario debe ser un número positivo" }, status: :unprocessable_entity if salary.to_f <= 0
+    return render json: { error: "El parámetro 'years_worked' es requerido" }, status: :unprocessable_entity if years_worked.blank?
+
+    result = DismissalService.new(
+      salary:,
+      years_worked:,
+      months_fraction: params.fetch(:months_fraction, 0),
+      worker_type: params.fetch(:worker_type, 'monthly'),
+      days_worked: params.fetch(:days_worked, 0),
+      aggravating_factor: params[:aggravating_factor]
+    ).calculate
+
+    render json: result
+  end
+
   private
 
   def parse_salaries(input)

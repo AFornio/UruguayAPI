@@ -504,6 +504,58 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>Indemnización por Despido - Calculadora</summary>
+
+  ### GET /api/v1/salary/dismissal?salary=&years_worked=
+
+  Calcula la indemnización por despido (IPD) según el tipo de trabajador, antigüedad y factores agravantes.
+
+  **Parámetros**
+
+  - `salary` (requerido): Salario mensual nominal (o jornal diario para jornaleros).
+  - `years_worked` (requerido): Años de antigüedad.
+  - `months_fraction` (opcional, default: 0): Meses adicionales sobre los años completos (fracción = año completo).
+  - `worker_type` (opcional, default: "monthly"): Tipo de trabajador: `monthly`, `daily`, `domestic`.
+  - `days_worked` (opcional, default: 0): Días trabajados en el período (solo para jornaleros).
+  - `aggravating_factor` (opcional): Factor agravante: `illness`, `accident`, `bps_report`, `pregnancy`, `harassment`, `disability`.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con el cálculo de la indemnización.
+    ```json
+    {
+      "base_ipd": 150000.0,
+      "months_compensation": 3,
+      "aggravating_factor": null,
+      "aggravating_amount": 0.0,
+      "total_ipd": 150000.0,
+      "worker_type": "monthly",
+      "currency": "UYU"
+    }
+    ```
+  - 422 Unprocessable Entity: Si faltan parámetros requeridos o son inválidos.
+
+  **Reglas por tipo de trabajador**
+
+  | Tipo | Ley | Fórmula | Tope |
+  |------|-----|---------|------|
+  | Mensual | 10.489 | 1 sueldo × años | 6 meses |
+  | Jornalero | 10.570 | Variable según días trabajados | 150 jornales |
+  | Doméstico | 18.065 | Igual que mensual (mín. 90 días) | 6 meses |
+
+  **Factores agravantes**
+
+  | Factor | Efecto |
+  |--------|--------|
+  | Enfermedad | 2× IPD |
+  | No readmisión tras accidente | 3× IPD |
+  | Denuncia BPS | 3× IPD |
+  | Embarazo/maternidad | IPD + 6 sueldos |
+  | Acoso sexual | IPD + 6 sueldos |
+  | Discapacidad | IPD + 6 sueldos |
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices
