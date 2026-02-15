@@ -406,6 +406,55 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>Aguinaldo - Calculadora</summary>
+
+  ### GET /api/v1/salary/aguinaldo?monthly_salaries=
+
+  Calcula el aguinaldo (Sueldo Anual Complementario) a partir de los ingresos nominales del semestre,
+  aplicando las mismas deducciones que al salario mensual (BPS, FONASA, FRL, IRPF).
+
+  **Fórmula:** `Aguinaldo bruto = Suma de ingresos nominales del semestre ÷ 12`
+
+  **Períodos:**
+  - Junio: ingresos de diciembre anterior a mayo
+  - Diciembre: ingresos de junio a noviembre
+
+  **Parámetros**
+
+  - `monthly_salaries` (requerido): Salarios nominales mensuales. Puede ser:
+    - Un solo valor (se asume salario fijo para los 6 meses del semestre)
+    - Lista separada por comas: `40000,42000,45000,48000,50000,55000`
+    - Array: `monthly_salaries[]=40000&monthly_salaries[]=42000`
+  - `has_spouse` (opcional, default: false): Si el trabajador tiene cónyuge a cargo en FONASA.
+  - `children` (opcional, default: 0): Cantidad de hijos sin discapacidad a cargo.
+  - `disabled_children` (opcional, default: 0): Cantidad de hijos con discapacidad a cargo.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con el desglose completo del cálculo.
+    ```json
+    {
+      "gross_aguinaldo": 25000.0,
+      "deductions": {
+        "bps": 3750.0,
+        "fonasa": 1125.0,
+        "frl": 25.0,
+        "irpf": 0.0,
+        "total": 4900.0
+      },
+      "net_aguinaldo": 20100.0,
+      "monthly_salaries": [50000.0, 50000.0, 50000.0, 50000.0, 50000.0, 50000.0],
+      "currency": "UYU"
+    }
+    ```
+  - 422 Unprocessable Entity: Si el parámetro `monthly_salaries` no es proporcionado, contiene valores negativos o tiene más de 6 meses.
+
+  **Ingresos incluidos:** sueldo base, horas extra, comisiones, feriados trabajados, nocturnidad.
+
+  **Ingresos excluidos:** tickets de alimentación, subsidios BPS, salario vacacional (salvo convenio colectivo).
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices
