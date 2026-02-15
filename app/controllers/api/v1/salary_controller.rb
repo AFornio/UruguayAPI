@@ -35,6 +35,27 @@ class Api::V1::SalaryController < ApplicationController
     render json: result
   end
 
+  def vacation
+    salary = params[:salary]
+    years_worked = params[:years_worked]
+
+    return render json: { error: "El parámetro 'salary' es requerido" }, status: :unprocessable_entity if salary.blank?
+    return render json: { error: "El salario debe ser un número positivo" }, status: :unprocessable_entity if salary.to_f <= 0
+    return render json: { error: "El parámetro 'years_worked' es requerido" }, status: :unprocessable_entity if years_worked.blank?
+    return render json: { error: "Los años trabajados deben ser un número no negativo" }, status: :unprocessable_entity if years_worked.to_i.negative?
+
+    result = VacationService.new(
+      salary:,
+      years_worked:,
+      has_spouse: ActiveModel::Type::Boolean.new.cast(params[:has_spouse]),
+      children: params.fetch(:children, 0),
+      disabled_children: params.fetch(:disabled_children, 0),
+      is_domestic: ActiveModel::Type::Boolean.new.cast(params[:is_domestic])
+    ).calculate
+
+    render json: result
+  end
+
   private
 
   def parse_salaries(input)

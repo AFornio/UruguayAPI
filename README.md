@@ -455,6 +455,55 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>Salario Vacacional y Licencia - Calculadora</summary>
+
+  ### GET /api/v1/salary/vacation?salary=&years_worked=
+
+  Calcula los días de licencia y el salario vacacional según la antigüedad del trabajador.
+  El salario vacacional se calcula sobre el sueldo líquido y está exento de BPS, FONASA y FRL,
+  pero sujeto a IRPF a tasa marginal (Ley 19.321/2015).
+
+  **Fórmula:** `Salario vacacional = (Sueldo líquido mensual ÷ 30) × Días de licencia`
+
+  **Parámetros**
+
+  - `salary` (requerido): Salario nominal bruto mensual en pesos uruguayos.
+  - `years_worked` (requerido): Años de antigüedad del trabajador.
+  - `has_spouse` (opcional, default: false): Si el trabajador tiene cónyuge a cargo.
+  - `children` (opcional, default: 0): Cantidad de hijos sin discapacidad a cargo.
+  - `disabled_children` (opcional, default: 0): Cantidad de hijos con discapacidad a cargo.
+  - `is_domestic` (opcional, default: false): Si es trabajador/a doméstico/a (+15% adicional).
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con el cálculo de licencia y salario vacacional.
+    ```json
+    {
+      "vacation_days": 20,
+      "gross_vacation_pay": 13333.33,
+      "irpf": 0.0,
+      "net_vacation_pay": 13333.33,
+      "is_domestic": false,
+      "years_worked": 3,
+      "currency": "UYU"
+    }
+    ```
+  - 422 Unprocessable Entity: Si faltan parámetros requeridos o son inválidos.
+
+  **Días de licencia por antigüedad (Ley 12.590)**
+
+  | Años de servicio | Días |
+  |------------------|------|
+  | 0-4 | 20 |
+  | 5 | 21 |
+  | 9 | 22 |
+  | 13 | 23 |
+  | 17 | 24 |
+  | 21 | 25 |
+  | +4 años desde el 5to | +1 día (sin tope) |
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices
