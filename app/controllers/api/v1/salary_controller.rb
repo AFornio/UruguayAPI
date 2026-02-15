@@ -91,6 +91,27 @@ class Api::V1::SalaryController < ApplicationController
     render json: result
   end
 
+  def unemployment
+    salary = params[:salary]
+    reason = params[:reason]
+
+    return render json: { error: "El parámetro 'salary' es requerido" }, status: :unprocessable_entity if salary.blank?
+    return render json: { error: "El salario debe ser un número positivo" }, status: :unprocessable_entity if salary.to_f <= 0
+    return render json: { error: "El parámetro 'reason' es requerido (dismissal o suspension)" }, status: :unprocessable_entity if reason.blank?
+    return render json: { error: "Razón inválida. Opciones: dismissal, suspension" }, status: :unprocessable_entity unless %w[dismissal suspension].include?(reason)
+
+    result = UnemploymentService.new(
+      salary:,
+      reason:,
+      worker_type: params.fetch(:worker_type, 'monthly'),
+      daily_rate: params.fetch(:daily_rate, 0),
+      has_dependents: ActiveModel::Type::Boolean.new.cast(params[:has_dependents]),
+      age: params.fetch(:age, 0)
+    ).calculate
+
+    render json: result
+  end
+
   private
 
   def parse_salaries(input)

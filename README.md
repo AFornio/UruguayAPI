@@ -607,6 +607,66 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>Seguro de Paro - Calculadora</summary>
+
+  ### GET /api/v1/salary/unemployment?salary=&reason=
+
+  Calcula el subsidio por desempleo (seguro de paro) según la causa de cese, tipo de trabajador,
+  dependientes y edad.
+
+  **Parámetros**
+
+  - `salary` (requerido): Salario promedio mensual de los últimos 6 meses.
+  - `reason` (requerido): Causa del desempleo: `dismissal` o `suspension`.
+  - `worker_type` (opcional, default: "monthly"): Tipo de trabajador: `monthly` o `daily`.
+  - `daily_rate` (opcional, default: 0): Jornal diario (solo para jornaleros).
+  - `has_dependents` (opcional, default: false): Si tiene dependientes a cargo (+20%).
+  - `age` (opcional, default: 0): Edad del trabajador (>= 50 extiende 6 meses).
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con el desglose mensual del subsidio.
+    ```json
+    {
+      "reason": "dismissal",
+      "worker_type": "monthly",
+      "average_salary": 50000.0,
+      "has_dependents": false,
+      "age_50_plus": false,
+      "monthly_benefits": [
+        { "month": 1, "amount": 33000.0 },
+        { "month": 2, "amount": 28500.0 },
+        { "month": 3, "amount": 25000.0 },
+        { "month": 4, "amount": 22500.0 },
+        { "month": 5, "amount": 21000.0 },
+        { "month": 6, "amount": 20000.0 }
+      ],
+      "total_benefit": 150000.0,
+      "duration_months": 6,
+      "currency": "UYU"
+    }
+    ```
+  - 422 Unprocessable Entity: Si faltan parámetros requeridos o la razón es inválida.
+
+  **Porcentajes por despido (mensual)**
+
+  | Mes | % del promedio |
+  |-----|---------------|
+  | 1 | 66% |
+  | 2 | 57% |
+  | 3 | 50% |
+  | 4 | 45% |
+  | 5 | 42% |
+  | 6 | 40% |
+
+  **Suspensión:** 50% fijo, 4 meses máximo.
+
+  **Jornaleros por despido:** 16, 14, 12, 11, 10, 9 jornales por mes.
+
+  **Suplementos:** Dependientes +20% | Mayores de 50: +6 meses al 40%.
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices
