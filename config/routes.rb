@@ -60,6 +60,10 @@ Rails.application.routes.draw do
         get 'values'
       end
 
+      scope 'inflation', controller: 'inflation', as: 'inflation' do
+        get 'indicators'
+      end
+
       scope 'supermarkets', controller: 'supermarkets', as: 'supermarkets' do
         get 'food_basket', to: 'supermarkets#food_basket'
         get 'food_basket/:store', to: 'supermarkets#food_basket_store'

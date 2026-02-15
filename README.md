@@ -511,6 +511,43 @@ Obtiene los beneficios existenes para el tipo de banco
   | cpe | Costo Promedio Equivalente |
   | bfc | Base Ficta de Contribución |
 </details>
+
+<details>
+  <summary>Inflación - Indicadores INE</summary>
+
+  ### GET /api/v1/inflation/indicators
+
+  Obtiene las variaciones interanuales de los principales índices económicos publicados por el INE
+  (Instituto Nacional de Estadística): IPC, IMS, IMSN e ICCV.
+
+  **Fuente de datos:** INE (ine.gub.uy)
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK: Devuelve un objeto JSON con los indicadores y su variación interanual.
+    ```json
+    {
+      "ipc": { "period": "01/26", "variation_12m": 3.46 },
+      "ims": { "period": "12/25", "variation_12m": 5.99 },
+      "imsn": { "period": "12/25", "variation_12m": 5.97 },
+      "iccv": { "period": "12/25", "variation_12m": 3.66 }
+    }
+    ```
+  - 500 Internal Server Error: Si ocurre un error al intentar obtener los datos.
+
+  **Indicadores disponibles**
+
+  | Clave | Descripción |
+  |-------|-------------|
+  | ipc | Índice de Precios del Consumo (inflación) |
+  | ims | Índice Medio de Salarios |
+  | imsn | Índice Medio de Salarios Nominales |
+  | iccv | Índice de Costo de la Construcción de Viviendas |
+</details>
 ---
 
 ### Inspirado por 💡:
