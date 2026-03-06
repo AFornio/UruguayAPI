@@ -987,7 +987,7 @@ Obtiene los beneficios existenes para el tipo de banco
 
   Obtiene el resultado más reciente del juego de lotería especificado.
 
-  **Fuente de datos:** resultadosorteo.net (agrega resultados oficiales de La Banca / DNLQ).
+  **Fuente de datos:** La Banca (www3.labanca.com.uy) — resultados oficiales de la DNLQ.
 
   **Parámetros**
 
@@ -1004,22 +1004,37 @@ Obtiene los beneficios existenes para el tipo de banco
     ```json
     {
       "game": "cinco_de_oro",
-      "date": "miércoles 12 de febrero 2026",
-      "numbers": [8, 23, 27, 44, 45],
-      "extra_number": 39
+      "date": "Miércoles 4 de Marzo de 2026",
+      "pozo_oro": "$ 44.441.130",
+      "pozo_plata": "$ 868.121",
+      "pozo_revancha": "$ 29.020.794",
+      "numeros_primera_vuelta": [1, 4, 7, 28, 32],
+      "numero_extra": 13,
+      "numeros_revancha": [7, 20, 32, 33, 37],
+      "numero_extra_revancha": null
     }
     ```
-  - 200 OK (Quiniela/Tómbola):
+  - 200 OK (Quiniela):
     ```json
     {
       "game": "quiniela_nocturna",
-      "date": "sábado 14 de febrero 2026",
+      "date": "Jueves 5 de Marzo de 2026",
+      "turno": "Sorteo Nocturno",
       "numbers": {
-        "1": 867, "2": 816, "3": 127, "4": 453, "5": 912,
-        "6": 345, "7": 678, "8": 901, "9": 234, "10": 567,
-        "11": 123, "12": 456, "13": 789, "14": 012, "15": 345,
-        "16": 678, "17": 901, "18": 234, "19": 567, "20": 890
+        "1": 142, "2": 546, "3": 981, "4": 658, "5": 267,
+        "6": 351, "7": 823, "8": 784, "9": 700, "10": 16,
+        "11": 219, "12": 376, "13": 321, "14": 438, "15": 219,
+        "16": 760, "17": 480, "18": 622, "19": 932, "20": 50
       }
+    }
+    ```
+  - 200 OK (Tómbola):
+    ```json
+    {
+      "game": "tombola_nocturna",
+      "date": "Jueves 5 de Marzo de 2026",
+      "turno": "Sorteo Nocturno",
+      "numbers": [13, 15, 16, 17, 20, 22, 25, 28, 42, 49, 50, 52, 70, 76, 82, 83, 86, 89, 95, 99]
     }
     ```
   - 404 Not Found: Si el juego no es válido.
