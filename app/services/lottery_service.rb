@@ -40,7 +40,7 @@ class LotteryService
     # ── Quiniela / Tómbola (DNLQ - loteria.gub.uy) ─────────────────
 
     def fetch_dnlq_page
-      yesterday = Date.today - 1
+      yesterday = Time.now.in_time_zone('America/Montevideo').to_date - 1
       url = "#{DNLQ_BASE_URL}/ver_resultados.php?vdia=#{yesterday.day}&vmes=#{yesterday.month}&vano=#{yesterday.year}"
       response = HTTParty.get(url, headers: { 'User-Agent' => 'Mozilla/5.0' })
       return nil unless response.success?
