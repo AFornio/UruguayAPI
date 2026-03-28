@@ -987,12 +987,11 @@ Obtiene los beneficios existenes para el tipo de banco
 
   Obtiene el resultado más reciente del juego de lotería especificado.
 
-  **Fuente de datos:** La Banca (www3.labanca.com.uy) — resultados oficiales de la DNLQ.
+  **Fuente de datos:** DNLQ (loteria.gub.uy) — Dirección Nacional de Loterías y Quinielas
 
   **Parámetros**
 
   - `game` (requerido en la URL): Nombre del juego. Opciones:
-    - `cinco_de_oro` — 5 de Oro (domingos y miércoles)
     - `quiniela_nocturna` — Quiniela Nocturna (lunes a sábado)
     - `quiniela_vespertina` — Quiniela Vespertina (lunes a viernes)
     - `tombola_nocturna` — Tómbola Nocturna (lunes a sábado)
@@ -1000,31 +999,17 @@ Obtiene los beneficios existenes para el tipo de banco
 
   **Respuestas**
 
-  - 200 OK (5 de Oro):
-    ```json
-    {
-      "game": "cinco_de_oro",
-      "date": "Miércoles 4 de Marzo de 2026",
-      "pozo_oro": "$ 44.441.130",
-      "pozo_plata": "$ 868.121",
-      "pozo_revancha": "$ 29.020.794",
-      "numeros_primera_vuelta": [1, 4, 7, 28, 32],
-      "numero_extra": 13,
-      "numeros_revancha": [7, 20, 32, 33, 37],
-      "numero_extra_revancha": null
-    }
-    ```
   - 200 OK (Quiniela):
     ```json
     {
       "game": "quiniela_nocturna",
-      "date": "Jueves 5 de Marzo de 2026",
+      "date": "Jueves 26 de Marzo de 2026",
       "turno": "Sorteo Nocturno",
       "numbers": {
-        "1": 142, "2": 546, "3": 981, "4": 658, "5": 267,
-        "6": 351, "7": 823, "8": 784, "9": 700, "10": 16,
-        "11": 219, "12": 376, "13": 321, "14": 438, "15": 219,
-        "16": 760, "17": 480, "18": 622, "19": 932, "20": 50
+        "1": 866, "2": 768, "3": 649, "4": 932, "5": 670,
+        "6": 259, "7": 684, "8": 456, "9": 324, "10": 187,
+        "11": 545, "12": 95, "13": 959, "14": 351, "15": 718,
+        "16": 292, "17": 97, "18": 285, "19": 375, "20": 539
       }
     }
     ```
@@ -1032,9 +1017,9 @@ Obtiene los beneficios existenes para el tipo de banco
     ```json
     {
       "game": "tombola_nocturna",
-      "date": "Jueves 5 de Marzo de 2026",
+      "date": "Jueves 26 de Marzo de 2026",
       "turno": "Sorteo Nocturno",
-      "numbers": [13, 15, 16, 17, 20, 22, 25, 28, 42, 49, 50, 52, 70, 76, 82, 83, 86, 89, 95, 99]
+      "numbers": [18, 24, 32, 39, 45, 49, 51, 56, 59, 66, 68, 70, 75, 84, 85, 87, 92, 95, 97, 98]
     }
     ```
   - 404 Not Found: Si el juego no es válido.
@@ -1048,7 +1033,7 @@ Obtiene los beneficios existenes para el tipo de banco
   - 200 OK:
     ```json
     {
-      "games": ["cinco_de_oro", "quiniela_nocturna", "quiniela_vespertina", "tombola_nocturna", "tombola_vespertina"]
+      "games": ["quiniela_nocturna", "quiniela_vespertina", "tombola_nocturna", "tombola_vespertina"]
     }
     ```
 </details>

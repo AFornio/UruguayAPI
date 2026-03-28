@@ -4,77 +4,84 @@ require "test_helper"
 require "webmock/minitest"
 
 class Api::V1::LotteryControllerTest < ActionDispatch::IntegrationTest
-  CINCO_DE_ORO_HTML = <<~HTML
+  DNLQ_RESULTS_HTML = <<~HTML
     <html>
       <body>
-        <div id="panel-izquierdo">
-          <h2>Miércoles 4 de Marzo de 2026</h2>
-          <div class="row">
-            <div class="large-4 columns pozo">
-              <span class="title">Pozo de Oro</span>
-              <span class="title">Pozo de Plata</span>
-            </div>
-            <div class="large-5 columns pozo">
-              <span class="monto-pozo">$ 44.441.130</span>
-              <span class="monto-pozo">$ 868.121</span>
-            </div>
-            <div class="large-3 columns pozo">
-              <span class="aciertos">(1 acierto)</span>
-              <span class="aciertos">(5 aciertos)</span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <ul class="bolillas small-block-grid-7">
-                <li><img alt="1" src="/assets/bolillas/oro/1.png"></li>
-                <li><img alt="4" src="/assets/bolillas/oro/4.png"></li>
-                <li><img alt="7" src="/assets/bolillas/oro/7.png"></li>
-                <li><img alt="28" src="/assets/bolillas/oro/28.png"></li>
-                <li><img alt="32" src="/assets/bolillas/oro/32.png"></li>
-                <li class="extra"><img alt="13" src="/assets/bolillas/oro/13.png"></li>
-                <li class="caption">Extra</li>
-              </ul>
-            </div>
-          </div>
-          <div class="large-4 columns pozo">
-            <span class="title">Pozo Revancha</span>
-          </div>
-          <div class="large-5 columns pozo">
-            <span class="monto-pozo">$ 29.020.794</span>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <ul class="bolillas small-block-grid-7">
-                <li><img alt="7" src="/assets/bolillas/oro/7.png"></li>
-                <li><img alt="20" src="/assets/bolillas/oro/20.png"></li>
-                <li><img alt="32" src="/assets/bolillas/oro/32.png"></li>
-                <li><img alt="33" src="/assets/bolillas/oro/33.png"></li>
-                <li><img alt="37" src="/assets/bolillas/oro/37.png"></li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        <table>
+          <tr>
+            <td>
+              <table width="95%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td colspan="2">
+                    <table width="100%">
+                      <tr>
+                        <td><img src="LOTERIAS/2011/cabezal_quinielas_vespertina.png" alt="TABLA QUINIELA Y TOMBOLA VESPERTINA" />Jueves 26 de Marzo de 2026</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td><img src="LOTERIAS/2011/logo_quiniela.png" alt="TABLA QUINIELA VESPERTINA" /></td>
+                  <td><img src="LOTERIAS/2011/logo_tombola.png" alt="TABLA TOMBOLA VESPERTINA" /></td>
+                </tr>
+                <tr>
+                  <td>
+                    <table border="0" cellspacing="1" cellpadding="0">
+                      <tr valign="top">
+                        <td><img src="LOTERIAS/2011/numeros_tablas/l_01.gif" alt="Número del Premio" /></td>
+                        <td>&nbsp;</td>
+                        <td><div align="center" class="text_azul_3">467</div></td>
+                        <td><img src="LOTERIAS/2011/gif_2.gif" /></td>
+                        <td><img src="LOTERIAS/2011/numeros_tablas/l_11.gif" alt="Número del Premio" /></td>
+                        <td>&nbsp;</td>
+                        <td><div align="center" class="text_azul_3">724</div></td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td>
+                    <table border="0" cellpadding="0" cellspacing="5">
+                      <tr>
+                        <td><div align="center" class="text_azul_3">07</div></td>
+                        <td><img src="LOTERIAS/2011/gif_2.gif" /></td>
+                        <td><div align="center" class="text_azul_3">11</div></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
       </body>
     </html>
   HTML
 
   setup do
-    stub_request(:get, "#{LotteryService::BASE_URL}/resultados/cincodeoro")
-      .to_return(body: CINCO_DE_ORO_HTML, status: 200)
+    stub_request(:get, /#{Regexp.escape(LotteryService::DNLQ_BASE_URL)}\/ver_resultados\.php/)
+      .to_return(body: DNLQ_RESULTS_HTML, status: 200)
   end
 
-  test "result returns success for cinco de oro" do
-    get api_v1_lottery_result_path(game: 'cinco_de_oro')
+  test "result returns success for quiniela vespertina" do
+    get api_v1_lottery_result_path(game: 'quiniela_vespertina')
 
     assert_response :success
 
     json = JSON.parse(response.body)
-    assert_equal "cinco_de_oro", json["game"]
-    assert_equal [1, 4, 7, 28, 32], json["numeros_primera_vuelta"]
-    assert_equal 13, json["numero_extra"]
-    assert_equal "$ 44.441.130", json["pozo_oro"]
-    assert_equal "$ 868.121", json["pozo_plata"]
-    assert_equal "$ 29.020.794", json["pozo_revancha"]
+    assert_equal "quiniela_vespertina", json["game"]
+    assert_equal 467, json["numbers"]["1"]
+    assert_equal 724, json["numbers"]["11"]
+    assert_equal "Sorteo Vespertino", json["turno"]
+  end
+
+  test "result returns success for tombola vespertina" do
+    get api_v1_lottery_result_path(game: 'tombola_vespertina')
+
+    assert_response :success
+
+    json = JSON.parse(response.body)
+    assert_equal "tombola_vespertina", json["game"]
+    assert_equal [7, 11], json["numbers"]
+    assert_equal "Sorteo Vespertino", json["turno"]
   end
 
   test "result returns not found for invalid game" do
@@ -86,20 +93,10 @@ class Api::V1::LotteryControllerTest < ActionDispatch::IntegrationTest
     assert_includes json["error"], "Juego no encontrado"
   end
 
-  test "result includes date" do
+  test "result returns not found for cinco_de_oro (removed)" do
     get api_v1_lottery_result_path(game: 'cinco_de_oro')
 
-    json = JSON.parse(response.body)
-
-    assert_equal "Miércoles 4 de Marzo de 2026", json["date"]
-  end
-
-  test "result includes revancha numbers" do
-    get api_v1_lottery_result_path(game: 'cinco_de_oro')
-
-    json = JSON.parse(response.body)
-
-    assert_equal [7, 20, 32, 33, 37], json["numeros_revancha"]
+    assert_response :not_found
   end
 
   test "games endpoint returns available games" do
@@ -108,16 +105,25 @@ class Api::V1::LotteryControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     json = JSON.parse(response.body)
-    assert_includes json["games"], "cinco_de_oro"
     assert_includes json["games"], "quiniela_nocturna"
-    assert_equal 5, json["games"].length
+    assert_includes json["games"], "quiniela_vespertina"
+    assert_includes json["games"], "tombola_nocturna"
+    assert_includes json["games"], "tombola_vespertina"
+    assert_equal 4, json["games"].length
+  end
+
+  test "games endpoint does not include cinco_de_oro" do
+    get api_v1_lottery_games_path
+
+    json = JSON.parse(response.body)
+    refute_includes json["games"], "cinco_de_oro"
   end
 
   test "handles scraping failure" do
-    stub_request(:get, "#{LotteryService::BASE_URL}/resultados/cincodeoro")
+    stub_request(:get, /#{Regexp.escape(LotteryService::DNLQ_BASE_URL)}\/ver_resultados\.php/)
       .to_raise(StandardError.new("Connection failed"))
 
-    get api_v1_lottery_result_path(game: 'cinco_de_oro')
+    get api_v1_lottery_result_path(game: 'quiniela_vespertina')
 
     assert_response :internal_server_error
   end
