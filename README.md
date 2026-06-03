@@ -803,6 +803,51 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>OSE - Cortes de Agua Programados</summary>
+
+  ### GET /api/v1/ose/outages
+
+  Obtiene los avisos de interrupción del suministro de agua potable publicados
+  por OSE (cortes programados por trabajos o roturas), por departamento y localidad.
+
+  **Fuente de datos:** OSE (cortes.ose.com.uy). Los avisos se publican y actualizan
+  a lo largo del día a medida que se programan los trabajos.
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "source": "OSE",
+      "count": 2,
+      "outages": [
+        {
+          "type": "AFECTACIÓN DEL NORMAL SUMINISTRO DE AGUA POTABLE",
+          "published_at": "03/06/2026 12:46",
+          "department": "MONTEVIDEO",
+          "locality": "MONTEVIDEO",
+          "affected_area": "Barrio Tres Ombúes, en calles Av. Luis Batlle Berres al Sur...",
+          "starts_at": "4 de junio hora 09:00",
+          "ends_at": "4 de junio hora 15:00",
+          "reason": "trabajos programados de sustitución de tuberías de distribución",
+          "additional_info": "Una vez restablecido el servicio el agua podría salir turbia..."
+        }
+      ]
+    }
+    ```
+  - 500 Internal Server Error: Si falla la conexión con OSE.
+
+  **Notas**
+
+  - Las fechas (`starts_at` / `ends_at`) y la `affected_area` vienen como texto libre
+    tal como los publica OSE; no están geocodificadas a coordenadas.
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices

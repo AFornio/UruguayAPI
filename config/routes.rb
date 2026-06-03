@@ -93,6 +93,10 @@ Rails.application.routes.draw do
         get 'food_basket/:store', to: 'supermarkets#food_basket_store'
         get 'food_basket/:store/:product', to: 'supermarkets#food_basket_store_product'
       end
+
+      scope 'ose', controller: 'ose', as: 'ose' do
+        get 'outages'
+      end
     end
   end
 end
