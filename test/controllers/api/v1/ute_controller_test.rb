@@ -82,4 +82,56 @@ class Api::V1::UteControllerTest < ActionDispatch::IntegrationTest
     json = JSON.parse(response.body)
     assert_includes json, "error"
   end
+
+  UTE_WORKS_JSON = <<~JSON
+    [
+      {
+        "FECHA_DETECCION": "3/6/2026 9:00:00",
+        "ID_INCIDENCIA": 8600832,
+        "INSTALACION_AFECTADA": "SB 1340",
+        "COORDENADAS": "-56.2570866259,-34.8292420904 -56.2570866259,-34.8292420904",
+        "CLIENTES_AFECTADOS": 2,
+        "CLIENTES_A_REPONER": 2,
+        "FECHA_PREVISTA_REPOSICION": "3/6/2026 17:00:00",
+        "PROGRAMADA": true
+      }
+    ]
+  JSON
+
+  test "returns power outages successfully" do
+    stub_request(:get, UteOutagesService::WORKS_URL).to_return(body: UTE_WORKS_JSON, status: 200)
+
+    get api_v1_ute_outages_path
+
+    assert_response :success
+
+    json = JSON.parse(response.body)
+    assert_equal "UTE", json["source"]
+    assert_equal 1, json["count"]
+  end
+
+  test "outage contains coordinates and expected fields" do
+    stub_request(:get, UteOutagesService::WORKS_URL).to_return(body: UTE_WORKS_JSON, status: 200)
+
+    get api_v1_ute_outages_path
+
+    json = JSON.parse(response.body)
+    outage = json["outages"].first
+
+    assert_in_delta(-34.8292420904, outage["latitude"], 0.0001)
+    assert_in_delta(-56.2570866259, outage["longitude"], 0.0001)
+    assert_equal "SB 1340", outage["installation"]
+    assert_equal 2, outage["affected_clients"]
+  end
+
+  test "handles outages fetch failure" do
+    stub_request(:get, UteOutagesService::WORKS_URL).to_raise(StandardError.new("Connection failed"))
+
+    get api_v1_ute_outages_path
+
+    assert_response :internal_server_error
+
+    json = JSON.parse(response.body)
+    assert_includes json, "error"
+  end
 end

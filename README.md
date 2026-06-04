@@ -803,6 +803,52 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>UTE - Cortes de Luz Programados</summary>
+
+  ### GET /api/v1/ute/outages
+
+  Obtiene los trabajos de mejora programados de UTE (cortes de luz), con
+  coordenadas geográficas y cantidad de clientes afectados por trabajo.
+
+  **Fuente de datos:** UTE — misma API JSON que alimenta el mapa público del
+  estado del servicio eléctrico (apps2.ute.com.uy). Se actualiza durante el día.
+
+  **Parámetros**
+
+  Este endpoint no requiere parámetros.
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "source": "UTE",
+      "count": 1,
+      "outages": [
+        {
+          "id": 8600832,
+          "installation": "SB 1340",
+          "latitude": -34.8292420904,
+          "longitude": -56.2570866259,
+          "affected_clients": 2,
+          "clients_to_restore": 2,
+          "detected_at": "3/6/2026 9:00:00",
+          "estimated_restoration": "3/6/2026 17:00:00",
+          "scheduled": true
+        }
+      ]
+    }
+    ```
+  - 500 Internal Server Error: Si falla la conexión con UTE.
+
+  **Notas**
+
+  - `latitude` / `longitude` se extraen del campo `COORDENADAS` (formato `lng,lat`);
+    pueden venir en `null` si UTE no los informa.
+  - Las fechas vienen como texto libre (`d/m/yyyy h:mm:ss`) tal como las publica UTE.
+</details>
+
+<details>
   <summary>OSE - Cortes de Agua Programados</summary>
 
   ### GET /api/v1/ose/outages

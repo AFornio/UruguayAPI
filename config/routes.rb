@@ -75,6 +75,7 @@ Rails.application.routes.draw do
 
       scope 'ute', controller: 'ute', as: 'ute' do
         get 'tariffs'
+        get 'outages'
       end
 
       scope 'lottery', controller: 'lottery', as: 'lottery' do
