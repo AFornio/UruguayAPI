@@ -10,7 +10,7 @@
 #
 # Fuente: https://www.cartelera.com.uy
 class CarteleraService
-  BASE_URL = 'https://www.cartelera.com.uy'
+  BASE_URL = 'https://cartelera.montevideo.com.uy'
 
   VALID_EVENT_TYPES = %w[movies music videos theater cable art].freeze
 
