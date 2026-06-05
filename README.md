@@ -951,6 +951,67 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
+  <summary>Montevideo - Bicicircuitos (Ciclovías)</summary>
+
+  ### GET /api/v1/montevideo/bike_lanes
+
+  Obtiene la red de bicicircuitos de Montevideo del mapa "Montevideo en Bici" de la
+  Intendencia: ciclovías, bicisendas y calles 30, con la geometría de cada tramo.
+  Solo existe para Montevideo (el interior no publica esta capa).
+
+  **Fuente de datos**
+
+  - GeoServer de la Intendencia de Montevideo (WFS), capa
+    `vyt_v_bi_bicicircuitos_activos`. Mapa: https://montevideo.gub.uy/mapa-montevideo-en-bici
+
+  **Parámetros**
+
+  | Parámetro | Requerido | Descripción |
+  |-----------|-----------|-------------|
+  | `type` | No | Filtra por tipo: `ciclovia`, `bicisenda` o `calle_30`. Sin él se devuelven todos. |
+
+  **Respuesta**
+
+  - 200 OK:
+    ```json
+    {
+      "source": "Intendencia de Montevideo",
+      "count": 99,
+      "bike_lanes": [
+        {
+          "id": 15,
+          "name": "Ciudad Vieja - Zabala",
+          "type": "Ciclovía",
+          "type_slug": "ciclovia",
+          "width_m": 1.0,
+          "two_way": false,
+          "active": true,
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [[-56.2105, -34.9058], [-56.2098, -34.9051]]
+          }
+        }
+      ]
+    }
+    ```
+  - 500 Internal Server Error: Si falla la conexión con el GeoServer de la Intendencia.
+
+  **Tipos de bicicircuito**
+
+  | `type_slug` | `type` | Descripción |
+  |-------------|--------|-------------|
+  | `ciclovia` | Ciclovía | Carril sobre la calzada con separación física |
+  | `bicisenda` | Bicisenda | Senda sobre la vereda, exclusiva para bicicletas |
+  | `calle_30` | Calle 30 km/h | Calzada compartida con velocidad máxima de 30 km/h |
+
+  **Notas**
+
+  - `two_way` es `true` cuando el tramo es de doble sentido; `width_m` puede ser `null`
+    (las calles 30 comparten la calzada y no tienen ancho propio).
+  - `geometry` es un `LineString` GeoJSON en coordenadas EPSG:4326 (`[lon, lat]`).
+</details>
+
+<details>
   <summary>Peajes - Tarifas y Ubicaciones</summary>
 
   ### GET /api/v1/tolls/prices

@@ -98,6 +98,10 @@ Rails.application.routes.draw do
       scope 'ose', controller: 'ose', as: 'ose' do
         get 'outages'
       end
+
+      scope 'montevideo', controller: 'montevideo', as: 'montevideo' do
+        get 'bike_lanes'
+      end
     end
   end
 end
