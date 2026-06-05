@@ -52,7 +52,7 @@ class CarteleraService
       event_data = article.css('.info-holder .event-data li')
       raw_event_link = raw_link.start_with?('http') ? raw_link : "#{BASE_URL}/#{raw_link.sub(%r{\A/+}, '')}"
       event_link = raw_event_link.sub(%r{(?<=\w)//}, '/')
-      description = fetch_description(event_link)
+      description = nil
 
       case type
         when 'art'
