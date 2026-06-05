@@ -12,9 +12,16 @@ class UteOutagesService
   def self.fetch_outages
     response = HTTParty.get(WORKS_URL)
     works = parse_body(response.body)
-    outages = works.filter_map { |work| build_outage(work) }
+    planned_works = works.filter_map { |work| build_outage(work) }
 
-    { source: 'UTE', count: outages.length, outages: }
+    afectaciones = UteAfectacionesService.fetch_all
+
+    {
+      source: 'UTE',
+      planned_works: { count: planned_works.length, items: planned_works },
+      departments: afectaciones[:departments],
+      neighborhoods: afectaciones[:neighborhoods]
+    }
   end
 
   def self.parse_body(body)

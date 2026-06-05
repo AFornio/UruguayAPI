@@ -803,15 +803,16 @@ Obtiene los beneficios existenes para el tipo de banco
 </details>
 
 <details>
-  <summary>UTE - Cortes de Luz Programados</summary>
+  <summary>UTE - Estado del Servicio Eléctrico</summary>
 
   ### GET /api/v1/ute/outages
 
-  Obtiene los trabajos de mejora programados de UTE (cortes de luz), con
-  coordenadas geográficas y cantidad de clientes afectados por trabajo.
+  Obtiene el estado actual del servicio eléctrico de UTE en una sola respuesta:
+  trabajos de mejora programados (con coordenadas exactas), cortes por departamento
+  y cortes por zona urbana/barrio.
 
-  **Fuente de datos:** UTE — misma API JSON que alimenta el mapa público del
-  estado del servicio eléctrico (apps2.ute.com.uy). Se actualiza durante el día.
+  **Fuente de datos:** UTE — misma API JSON que alimenta el mapa interactivo del
+  estado del servicio eléctrico (apps2.ute.com.uy). Se actualiza en tiempo real.
 
   **Parámetros**
 
@@ -823,29 +824,85 @@ Obtiene los beneficios existenes para el tipo de banco
     ```json
     {
       "source": "UTE",
-      "count": 1,
-      "outages": [
-        {
-          "id": 8600832,
-          "installation": "SB 1340",
-          "latitude": -34.8292420904,
-          "longitude": -56.2570866259,
-          "affected_clients": 2,
-          "clients_to_restore": 2,
-          "detected_at": "3/6/2026 9:00:00",
-          "estimated_restoration": "3/6/2026 17:00:00",
-          "scheduled": true
-        }
-      ]
+      "planned_works": {
+        "count": 1,
+        "items": [
+          {
+            "id": 8600832,
+            "installation": "SB 1340",
+            "latitude": -34.8292420904,
+            "longitude": -56.2570866259,
+            "affected_clients": 2,
+            "clients_to_restore": 2,
+            "detected_at": "3/6/2026 9:00:00",
+            "estimated_restoration": "3/6/2026 17:00:00",
+            "scheduled": true
+          }
+        ]
+      },
+      "departments": {
+        "count": 19,
+        "items": [
+          {
+            "id": "1",
+            "name": "MONTEVIDEO",
+            "zone_type": "Departamento",
+            "latitude": -34.81783,
+            "longitude": -56.21469,
+            "pending_notices": 12,
+            "unplanned_affected": 504,
+            "planned_affected": 0,
+            "incidents": 35,
+            "planned_incidents": 0,
+            "clients_interrupted": 492,
+            "total_clients": 618686,
+            "affected_percentage": 0.08,
+            "updated_at": "4/6/2026 21:00:20"
+          }
+        ]
+      },
+      "neighborhoods": {
+        "count": 144,
+        "items": [
+          {
+            "id": "PL",
+            "name": "PALERMO",
+            "zone_type": "Barrio",
+            "latitude": -34.91123,
+            "longitude": -56.17846,
+            "pending_notices": 1,
+            "unplanned_affected": 1,
+            "planned_affected": 0,
+            "incidents": 0,
+            "planned_incidents": 0,
+            "clients_interrupted": 0,
+            "total_clients": 8366,
+            "affected_percentage": 0.01,
+            "updated_at": "4/6/2026 21:00:34"
+          }
+        ]
+      }
     }
     ```
   - 500 Internal Server Error: Si falla la conexión con UTE.
 
-  **Notas**
+  **Campos de `planned_works.items`**
 
-  - `latitude` / `longitude` se extraen del campo `COORDENADAS` (formato `lng,lat`);
-    pueden venir en `null` si UTE no los informa.
-  - Las fechas vienen como texto libre (`d/m/yyyy h:mm:ss`) tal como las publica UTE.
+  | Campo | Descripción |
+  |-------|-------------|
+  | `latitude` / `longitude` | Extraídos del campo `COORDENADAS` (formato `lng,lat`); pueden ser `null` si UTE no los informa |
+  | `scheduled` | `true` si el corte es programado, `false` si es intempestivo |
+  | `detected_at` / `estimated_restoration` | Texto libre (`d/m/yyyy h:mm:ss`) tal como lo publica UTE |
+
+  **Campos de `departments` y `neighborhoods`**
+
+  | Campo | Descripción |
+  |-------|-------------|
+  | `unplanned_affected` | Clientes afectados por cortes intempestivos |
+  | `planned_affected` | Clientes afectados por cortes programados |
+  | `incidents` | Incidencias activas en la zona |
+  | `clients_interrupted` | Clientes actualmente sin suministro |
+  | `affected_percentage` | Porcentaje de clientes afectados sobre el total de la zona |
 </details>
 
 <details>
