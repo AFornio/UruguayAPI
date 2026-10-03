@@ -37,7 +37,8 @@ class EconomyService
 
       indicator_text = cells[0].text.strip
       key = find_key(indicator_text)
-      next unless key
+      # Primera fila gana: 'Cuota mutual - construcción' no debe pisar a 'Cuota mutual'
+      next if key.nil? || values.key?(key)
 
       raw_value = latest_value(cells[1..])
       next unless raw_value

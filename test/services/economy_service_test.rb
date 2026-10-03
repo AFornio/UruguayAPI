@@ -37,6 +37,11 @@ class EconomyServiceTest < ActiveSupport::TestCase
             <td class="celda-numero">$ 1.820,00</td>
           </tr>
           <tr>
+            <td> Cuota mutual - construcción <sup>(1)</sup></td>
+            <td class="celda-numero">$ 2.061,00</td>
+            <td class="celda-numero">$ 2.061,00</td>
+          </tr>
+          <tr>
             <td> Costo Promedio Equivalente (CPE) <sup>(1)</sup></td>
             <td class="celda-numero">$ 6.693,00</td>
             <td class="celda-numero">$ 6.693,00</td>
@@ -109,6 +114,12 @@ class EconomyServiceTest < ActiveSupport::TestCase
     result = EconomyService.fetch_values
 
     assert_in_delta 24_572.00, result[:minimum_wage][:value], 0.01
+  end
+
+  test "mutual quota is not overridden by construction row" do
+    result = EconomyService.fetch_values
+
+    assert_in_delta 1820.00, result[:mutual_quota][:value], 0.01
   end
 
   test "picks latest column value" do
