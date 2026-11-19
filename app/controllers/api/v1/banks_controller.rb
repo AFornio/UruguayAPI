@@ -66,4 +66,15 @@ class Api::V1::BanksController < ApplicationController
 
     render json: discounts_by_category
   end
+
+  def benefits
+    bank = params[:bank]
+    unless BankBenefits::BANKS.include?(bank)
+      return render json: { error: "Banco no soportado: #{bank}" }, status: :not_found
+    end
+
+    render json: BankBenefits.fetch(bank)
+  rescue StandardError => e
+    render json: { error: e.message }, status: :internal_server_error
+  end
 end

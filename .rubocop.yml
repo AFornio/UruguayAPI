@@ -1,0 +1,34 @@
+# Config mínima para que RuboCop refleje el estilo que ya usa el repo.
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'bin/**/*'
+    - 'db/**/*'
+    - 'vendor/**/*'
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+# El repo usa `class Api::V1::FooController` / `FooTest`.
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'app/controllers/**/*'
+    - 'test/**/*'
+
+# Los scrapers arman un hash por beneficio: contar el hash como una línea.
+Metrics/MethodLength:
+  Max: 15
+  CountAsOne: ['hash', 'array', 'method_call']
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/CyclomaticComplexity:
+  Max: 9
+
+Metrics/PerceivedComplexity:
+  Max: 9

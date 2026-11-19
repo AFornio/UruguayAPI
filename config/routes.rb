@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       scope 'banks', controller: 'banks', as: 'banks' do
         get 'brou_rates'
         get 'brou_benefits'
+        get 'benefits/:bank', action: :benefits, as: :benefits
       end
 
       scope 'buses', controller: 'buses', as: 'buses' do
