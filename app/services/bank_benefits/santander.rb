@@ -18,7 +18,7 @@ module BankBenefits
     class << self
       def fetch_all
         categories = category_by_id
-        Base.html(URL).css(ITEM).uniq { |item| item['data-history-node-id'] }.map do |item|
+        Scraper.html(URL).css(ITEM).uniq { |item| item['data-history-node-id'] }.map do |item|
           parse(item, categories[item['data-history-node-id']])
         end
       end
@@ -26,7 +26,9 @@ module BankBenefits
       private
 
       def category_by_id
-        pages = Base.parallel_map(CATEGORIES.to_a) { |id, name| [name, Base.html("#{URL}?categoria%5B#{id}%5D=#{id}")] }
+        pages = Scraper.parallel_map(CATEGORIES.to_a) do |id, name|
+          [name, Scraper.html("#{URL}?categoria%5B#{id}%5D=#{id}")]
+        end
         pages.each_with_object({}) do |(name, doc), ids|
           doc.css(ITEM).each { |item| ids[item['data-history-node-id']] ||= name }
         end

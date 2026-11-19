@@ -12,7 +12,7 @@ module BankBenefits
 
     class << self
       def fetch_all
-        Base.get(URL).body.scan(BLOCK).flatten.filter_map do |block|
+        Scraper.get(URL).body.scan(BLOCK).flatten.filter_map do |block|
           fields = fields(block)
           next unless Base.active?(fields['desde'], fields['hasta'])
 

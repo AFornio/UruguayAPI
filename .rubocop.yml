@@ -32,3 +32,8 @@ Metrics/CyclomaticComplexity:
 
 Metrics/PerceivedComplexity:
   Max: 9
+
+# Los constructores de hashes con keyword args (`rate(source:, name:, ...)`) se leen bien
+# aunque sean muchos; el límite queda para argumentos posicionales.
+Metrics/ParameterLists:
+  CountKeywordArgs: false

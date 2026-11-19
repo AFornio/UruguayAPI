@@ -27,7 +27,7 @@ module BankBenefits
       private
 
       def json(url)
-        JSON.parse(Base.get(url, headers: HEADERS).body)
+        JSON.parse(Scraper.get(url, headers: HEADERS).body)
       end
 
       def parse(item, categories)

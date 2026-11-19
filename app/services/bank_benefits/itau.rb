@@ -26,7 +26,7 @@ module BankBenefits
 
       # [[nombre de la lista, item], ...] agrupados por id del beneficio.
       def items_by_id
-        lists = Nokogiri::XML(Base.get(XML_URL).body).root.element_children
+        lists = Nokogiri::XML(Scraper.get(XML_URL).body).root.element_children
         pairs = lists.flat_map { |list| list.css('item').map { |item| [list['nombre'], item] } }
         pairs.group_by { |_, item| item['id'] }.values
       end
@@ -66,7 +66,7 @@ module BankBenefits
       def parse_landing(group)
         url = group.first.last.at_css('url').text
         cards = group.map(&:first).uniq
-        merchants = landing_merchants(Base.html(url), url, cards)
+        merchants = landing_merchants(Scraper.html(url), url, cards)
         merchants.presence || [parse_link(group)].compact
       end
 

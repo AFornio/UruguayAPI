@@ -1,6 +1,4 @@
 require 'test_helper'
-require 'webmock/minitest'
-require 'minitest/mock'
 
 class BankBenefits::BaseTest < ActiveSupport::TestCase
   Base = BankBenefits::Base
@@ -38,26 +36,5 @@ class BankBenefits::BaseTest < ActiveSupport::TestCase
     assert_equal 20, benefit[:discount]
     assert_equal [2], benefit[:weekdays]
     assert_equal [], benefit[:cards]
-  end
-
-  test 'get reintenta un 403 y levanta si sigue bloqueado' do
-    stub_request(:get, 'https://banco.uy/x').to_return(status: 403).times(3).then.to_return(status: 403)
-
-    Base.stub(:sleep, nil) do
-      error = assert_raises(Base::BlockedError) { Base.get('https://banco.uy/x') }
-      assert_match '403', error.message
-    end
-    assert_requested :get, 'https://banco.uy/x', times: Base::RETRIES + 1
-  end
-
-  test 'get no reintenta un 404 y devuelve la respuesta si se recupera' do
-    stub_request(:get, 'https://banco.uy/no').to_return(status: 404)
-    stub_request(:get, 'https://banco.uy/ok').to_return({ status: 503 }, { status: 200, body: 'ok' })
-
-    Base.stub(:sleep, nil) do
-      assert_raises(Base::BlockedError) { Base.get('https://banco.uy/no') }
-      assert_equal 'ok', Base.get('https://banco.uy/ok').body
-    end
-    assert_requested :get, 'https://banco.uy/no', times: 1
   end
 end

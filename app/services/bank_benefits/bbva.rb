@@ -16,18 +16,18 @@ module BankBenefits
 
     class << self
       def fetch_all
-        cards = Base.parallel_map(CATEGORIES, threads: THREADS) { |category| category_cards(category) }
+        cards = Scraper.parallel_map(CATEGORIES, threads: THREADS) { |category| category_cards(category) }
         cards = cards.flatten.uniq { |card| card[:url] }
-        Base.parallel_map(cards, threads: THREADS) { |card| with_detail(card) }
-            .select { |benefit| Base.active?(nil, benefit[:valid_until]) }
+        Scraper.parallel_map(cards, threads: THREADS) { |card| with_detail(card) }
+               .select { |benefit| Base.active?(nil, benefit[:valid_until]) }
       end
 
       private
 
       def category_cards(category)
-        first = Base.html("#{BASE_URL}#{LIST_PATH}/#{category}.html")
+        first = Scraper.html("#{BASE_URL}#{LIST_PATH}/#{category}.html")
         pages = first.at_css('.pagination__pages')&.text.to_s[/de\s+(\d+)/, 1].to_i
-        rest = (2..pages).map { |page| Base.html("#{BASE_URL}#{LIST_PATH}/#{category}.pag-#{page}.html") }
+        rest = (2..pages).map { |page| Scraper.html("#{BASE_URL}#{LIST_PATH}/#{category}.pag-#{page}.html") }
         [first, *rest].flat_map { |doc| doc.css('article.promocard__base').map { |card| parse_card(card) } }
       end
 
@@ -55,8 +55,8 @@ module BankBenefits
 
       # Si un detalle no responde, el beneficio queda con lo del listado.
       def detail(url)
-        Base.html(url).at_css('.promodetail__text')
-      rescue Base::BlockedError
+        Scraper.html(url).at_css('.promodetail__text')
+      rescue Scraper::BlockedError
         nil
       end
 
