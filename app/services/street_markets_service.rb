@@ -1,4 +1,4 @@
-# Ferias vecinales de Montevideo: día, horario, barrio, tramos de calle y ubicación.
+# Ferias vecinales de Montevideo: día, horario, barrio, tramos de calle, ubicación y contorno.
 #
 # Fuente: la capa "Ferias vecinales de Montevideo" del geoserver de la Intendencia
 # (ide:V_SF_FERIAS_GEOM). Cada fila es un tramo; los tramos con el mismo código y día
@@ -30,7 +30,7 @@ class StreetMarketsService
       {
         id: "#{props.first['COD_FERIA']}-#{weekday}", name: name(props), neighborhood: neighborhood(props),
         weekday:, opens:, closes:, food: props.any? { |p| p['TIPO'] == FOOD }, segments: segments(props),
-        latitude:, longitude:
+        latitude:, longitude:, shapes: shapes(segments.pluck('geometry'))
       }
     end
 
@@ -56,6 +56,15 @@ class StreetMarketsService
     def segments(props)
       texts = props.map { |p| p['UBICACION'].to_s.squish }.compact_blank.uniq
       texts.sort_by { |text| I18n.transliterate(text).downcase.match?(/\A(a )?continuacion/) ? 1 : 0 }
+    end
+
+    # El contorno de cada tramo como [[lat, lng], ...], para dibujar la feria en el mapa.
+    def shapes(geometries)
+      geometries.compact.map do |geometry|
+        geometry['coordinates'].first.map do |lng, lat|
+          [lat.round(6), lng.round(6)]
+        end
+      end
     end
 
     # Promedio de los vértices de todos los tramos: alcanza para medir distancias y abrir el mapa.

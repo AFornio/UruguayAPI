@@ -31,6 +31,8 @@ class StreetMarketsServiceTest < ActiveSupport::TestCase
     assert_equal 'Juan Paullier desde Chaná hasta Guaná', market[:segments].first
     assert_in_delta(-34.905, market[:latitude], 0.0001)
     assert_in_delta(-56.167, market[:longitude], 0.0001)
+    assert_equal [[[-34.903, -56.168], [-34.905, -56.168]], [[-34.905, -56.166], [-34.907, -56.166]]],
+                 market[:shapes]
   end
 
   test 'el mismo codigo en otro dia es otra feria; ordenadas por dia de la semana' do
