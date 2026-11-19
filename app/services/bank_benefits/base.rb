@@ -27,11 +27,18 @@ module BankBenefits
     RETRIES = 3
     RETRY_ON = [403, 429, 500, 502, 503, 504].freeze
 
-    # Reintenta con espera creciente: BBVA corta con 403 si se le pide rápido.
+    class BlockedError < StandardError; end
+
+    # Reintenta con espera creciente (BBVA corta con 403 si se le pide rápido). Si sigue
+    # fallando, levanta: mejor un error visible que una lista vacía que parece real.
     def get(url, headers: {})
       (0..RETRIES).each do |attempt|
         response = HTTParty.get(url, headers: { 'User-Agent' => USER_AGENT }.merge(headers), timeout: TIMEOUT)
-        return response unless RETRY_ON.include?(response.code) && attempt < RETRIES
+        return response if response.success?
+        if attempt == RETRIES || !RETRY_ON.include?(response.code)
+          raise BlockedError,
+                "#{url} respondió #{response.code}"
+        end
 
         sleep(2**attempt)
       end

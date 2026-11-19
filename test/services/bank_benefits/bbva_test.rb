@@ -55,4 +55,13 @@ class BankBenefits::BbvaTest < ActiveSupport::TestCase
 
     assert_equal(%w[2099-10-31 2099-01-05], BankBenefits::Bbva.fetch_all.map { |b| b[:valid_until] })
   end
+
+  test 'si el detalle de un comercio falla, queda con los datos del listado' do
+    stub_request(:get, "#{LIST}/gastronomia/lo-de-jaime.html").to_return(status: 404)
+
+    jaime = BankBenefits::Bbva.fetch_all.find { |b| b[:merchant] == 'Lo de Jaime' }
+
+    assert_nil jaime[:description]
+    assert_equal ['Maldonado'], jaime[:departments]
+  end
 end

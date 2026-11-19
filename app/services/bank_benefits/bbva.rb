@@ -46,11 +46,18 @@ module BankBenefits
       end
 
       def with_detail(card)
-        detail = Base.html(card[:url]).at_css('.promodetail__text')
+        detail = detail(card[:url])
         # La primera lista del detalle son los descuentos; la segunda, los locales.
         discounts = detail ? detail.css('ul').first&.css('li').to_a.map(&:text) : []
         Base.benefit(bank: 'bbva', description: discounts.join("\n").presence,
                      valid_until: valid_until(detail&.text), **card)
+      end
+
+      # Si un detalle no responde, el beneficio queda con lo del listado.
+      def detail(url)
+        Base.html(url).at_css('.promodetail__text')
+      rescue Base::BlockedError
+        nil
       end
 
       # "Vigencia: 31 de Diciembre 2027" => "2027-12-31"
