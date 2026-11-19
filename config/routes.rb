@@ -14,6 +14,10 @@ Rails.application.routes.draw do
         get 'benefits/:bank', action: :benefits, as: :benefits
       end
 
+      scope 'street_markets', controller: 'street_markets', as: 'street_markets' do
+        root 'street_markets#index'
+      end
+
       scope 'beaches', controller: 'beaches', as: 'beaches' do
         root 'beaches#index'
       end
